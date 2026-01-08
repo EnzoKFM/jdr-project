@@ -44,9 +44,10 @@ const routes = [
     component: PlayerView,
   },
   
-  { path: '/quetes', name: 'quetes', component: QuestView, },
-  { path: '/quetes/ajouter', name: 'ajouter-quete', component: () => import('@/views/AddQuestView.vue'), },
-  { path: '/modifier/:questId', name: 'modifier', component: () => import('@/views/EditQuestView.vue'), },
+  { path: '/quetes',
+    name: 'quetes', 
+    component: QuestView,
+   },
 
   // Not Found
   {

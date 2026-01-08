@@ -15,31 +15,48 @@ const useQuetesStore = defineStore('quetes', () => {
   }
     const queteSpecifique = computed(() => (trouverQuete));
 
-  function ajouterQuete(nom, description, lieu, mdpActivation, mdpResolution, commentaire) {
+  // function ajouterQuete(nom, description, lieu, mdpActivation, mdpResolution, commentaire) {
+  //   quetes.value.push({
+  //     id: crypto.randomUUID(),
+  //     nom,
+  //     description,
+  //     lieu,
+
+  //     etat: 'inactive', // inactive | active | terminee | abandonnee
+
+  //     motDePasseActivation: mdpActivation,
+  //     motDePasseResolution: mdpResolution,
+
+  //     recompenses: [],
+  //     commentaire: commentaire || '',
+  //   });
+  // }
+  function ajouterQuete(data) {
     quetes.value.push({
       id: crypto.randomUUID(),
-      nom,
-      description,
-      lieu,
-
+      nom: data.nom,
+      description: data.description,
+      lieu: data.lieu,
       etat: 'inactive', // inactive | active | terminee | abandonnee
-
-      motDePasseActivation: mdpActivation,
-      motDePasseResolution: mdpResolution,
-
-      recompenses: [],
-      commentaire: commentaire || '',
+      motDePasseActivation: data.motDePasseActivation,
+      motDePasseResolution: data.motDePasseResolution,
+      recompenses: data.recompenses || [],
+      commentaire: data.commentaire || '',
     });
   }
 
-  function modifierQuete(queteId, nom, description, lieu, mdpActivation, mdpResolution, commentaire) {
-    const quete = trouverQuete(queteId);
-    quete.nom = nom;
-    quete.description = description;
-    quete.lieu = lieu;
-    quete.motDePasseActivation = mdpActivation;
-    quete.motDePasseResolution = mdpResolution;
-    quete.commentaire = commentaire || '';
+  function modifierQuete(questId, updates) {
+    const quete = trouverQuete(questId);
+
+        // Mettre à jour la campagne
+        quete.nom = updates.nom;
+        quete.description = updates.description;
+        quete.lieu = updates.lieu;
+        quete.motDePasseActivation = updates.motDePasseActivation;
+        quete.motDePasseResolution = updates.motDePasseResolution;
+        quete.commentaire = updates.commentaire || '';
+      
+      return null;
   }
 
   function activerQueteMj(id) {
@@ -77,6 +94,19 @@ const useQuetesStore = defineStore('quetes', () => {
     if (quete) quete.etat = 'abandonnee';
   }
 
+  function dupliquerQuete(id) {
+  const queteOriginale = quetes.value.find(q => q.id === id)
+  if (!queteOriginale) return
+
+  const nouvelleQuete = {
+    ...queteOriginale,
+    id: crypto.randomUUID(),
+    etat: 'inactive',
+  }
+
+  quetes.value.push(nouvelleQuete);
+}
+
   function supprimerQuete(id) {
     const indexQuete = trouverIndexQuete(id);
     quetes.value.splice(indexQuete, 1);
@@ -88,7 +118,7 @@ const useQuetesStore = defineStore('quetes', () => {
     activerQuete, activerQueteMj,
     resoudreQuete,
     abandonnerQuete,
-    queteSpecifique, modifierQuete, supprimerQuete,
+    queteSpecifique, modifierQuete, supprimerQuete, dupliquerQuete
   };
 });
 
