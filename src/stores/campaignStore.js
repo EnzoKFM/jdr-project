@@ -284,5 +284,12 @@ export const useCampaignStore = defineStore("campaign", {
         return null;
       }
     },
+
+    deletePlayer(campaignId, playerId) {
+      const campaign = this.campaigns.find(c => c.id === campaignId);
+      if (!campaign) return;
+
+      campaign.players = campaign.players.filter(p => p.id !== playerId);
+    }
   },
 });
