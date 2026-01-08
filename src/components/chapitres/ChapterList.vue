@@ -1,0 +1,278 @@
+<script setup>
+    import { ref } from 'vue';
+    import { useChapterStore } from '@/stores/chaptersStore';
+    import ChapterModal from './ChapterModal.vue';
+    import ChapterDeleteModal from './ChapterDeleteModal.vue';
+    import ChapterStateModal from './ChapterStateModal.vue';
+    import ChapterPasswordModal from './ChapterPasswordModal.vue';
+
+    const chapterStore = useChapterStore()
+
+    const editingChapter = ref(null);
+    const chapterToDelete = ref(null);
+
+    const showModal = ref(false);
+    const showDeleteModal = ref(false);
+    const showStateModal = ref(false);
+    const showPasswordActivateModal = ref(false);
+    const showPasswordResoluteModal = ref(false);
+
+    const openCreateModal = () => {
+        editingChapter.value = null;
+        showModal.value = true;
+    };
+
+    // Édition
+    const handleEdit = (chapter) => {
+        editingChapter.value = chapter;
+        showModal.value = true;
+    };
+
+    const handleStateEdit = (chapter) => {
+        editingChapter.value = chapter;
+        showStateModal.value = true;
+    };
+
+    const handlePasswordActivate = (chapter) => {
+        editingChapter.value = chapter;
+        showPasswordActivateModal.value = true;
+    };
+
+    const handlePasswordResolute = (chapter) => {
+        editingChapter.value = chapter;
+        showPasswordResoluteModal.value = true;
+    };
+
+    const handleSave = (formData) => {
+        if (editingChapter.value) {
+            // Mise à jour
+            chapterStore.modifyChapter(editingChapter.value.id, formData);
+        } else {
+            // Création
+            chapterStore.addChapter(formData);
+        }
+        closeModal();
+    };
+
+    // Fermer le modal
+    const closeModal = () => {
+        showModal.value = false;
+    };
+
+    // Suppression - Confirmation
+    const handleDeleteConfirm = (chapter) => {
+        chapterToDelete.value = chapter;
+        showDeleteModal.value = true;
+    };
+
+    // Suppression - Exécution
+    const handleDelete = () => {
+        if (chapterToDelete.value) {
+            chapterStore.deleteChapter(chapterToDelete.value.id);
+            closeDeleteModal();
+        }
+    };
+
+    // Fermer le modal de suppression
+    const closeDeleteModal = () => {
+        showDeleteModal.value = false;
+        chapterToDelete.value = null;
+    };
+
+    // Fermer le modal de modification d'état
+    const closeStateModal = () => {
+        showStateModal.value = false;
+        showPasswordActivateModal.value = false;
+        showPasswordResoluteModal.value = false;
+        editingChapter.value = null;
+    };
+
+    const expandedChapterId = ref(null)
+
+    const toggleRow = (chapterId) => {
+        expandedChapterId.value =
+            expandedChapterId.value === chapterId ? null : chapterId
+    }
+
+    function modifierEtatchapter(etat){
+        chapterStore.modifyStateChapter(editingChapter.value.id, etat)
+        closeStateModal();
+    }
+
+    const activateChapter = (enteredPassword) => {
+        if(enteredPassword !== editingChapter.value.activationMdp){
+            alert("Mot de passe incorrect")
+        } else {
+            chapterStore.modifyStateChapter(editingChapter.value.id, 'Activé')
+        }
+        closeStateModal()
+    }
+
+    const resoluteChapter = (enteredPassword) => {
+        if(enteredPassword !== editingChapter.value.resolutionMdp){
+            alert("Mot de passe incorrect")
+        } else {
+            chapterStore.modifyStateChapter(editingChapter.value.id, 'Terminé')
+        }
+        closeStateModal()
+    }
+
+    const duplicateChapter = (chapter) => {
+        chapterStore.duplicateChapter(chapter)
+    }
+</script>
+
+<template>
+    <div class="p-4 flex flex-col gap-y-4">
+        <div class="space-y-2">
+            <button
+                @click="openCreateModal"
+                class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+            >
+                <span class="text-xl">+</span>
+                Nouveau Chapitre
+        </button>
+        </div>
+        <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+            <table class="w-full border-collapse bg-white text-sm text-gray-700">
+                
+                <thead class="bg-gray-100 text-xs uppercase tracking-wide text-gray-600">
+                <tr>
+                    <th class="px-6 py-3 text-left font-semibold">Nom</th>
+                    <th class="px-6 py-3 text-left font-semibold">État</th>
+                    <th class="px-6 py-3 text-left font-semibold">Description</th>
+                    <th class="px-6 py-3 text-left font-semibold">Commentaire</th>
+                    <th class="px-6 py-3 text-left font-semibold">Actions</th>
+                </tr>
+                </thead>
+
+                <tbody class="divide-y divide-gray-200">
+                    <template
+                        v-for="chapter in chapterStore.listChapters()"
+                        :key="chapter.id"
+                    >
+                        <!-- Ligne principale -->
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td
+                                class="px-6 py-4 font-medium text-gray-900"
+                            >
+                                {{ chapter.name }}
+                            </td>
+
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-800">
+                                {{ chapter.state }}
+                                </span>
+                            </td>
+
+                            <td class="px-6 py-4 text-gray-600">
+                                {{ chapter.description }}
+                            </td>
+
+                            <td class="px-6 py-4 text-gray-600">
+                                {{ chapter.mjComment }}
+                            </td>
+
+                            <td class="flex gap-6 py-4 justify-center">
+
+                                <button
+                                    @click="handleEdit(chapter)"
+                                    class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                >
+                                    ✏️ Modifier
+                                </button>
+                                <button
+                                    @click="handleDeleteConfirm(chapter)"
+                                    class="bg-gradient-to-r from-rose-500 to-red-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-rose-600 hover:to-red-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                >
+                                    🗑️ Supprimer
+                                </button>
+                                <button
+                                    @click="duplicateChapter(chapter)"
+                                    class="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-amber-600 hover:to-yellow-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                >
+                                    📚 Dupliquer
+                                </button>
+                                <button
+                                    @click.stop="toggleRow(chapter.id)"
+                                    class="bg-gradient-to-r from-neutral-500 to-stone-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-neutral-600 hover:to-stone-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                >
+                                    V
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Ligne dropdown -->
+                        <tr v-if="expandedChapterId === chapter.id">
+                            <td colspan="5" class="bg-gray-50 px-6 py-4">
+                                <div class="flex gap-4">
+                                    <button
+                                        @click="handleStateEdit(chapter)"
+                                        class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                    >
+                                        ♾️ Modifier l'état
+                                    </button>
+                                    <button
+                                        @click="handlePasswordActivate(chapter)"
+                                        class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                        v-show="chapter.state === 'Inactif'"
+                                    >
+                                        ✔️ Activer
+                                    </button>
+                                    <button
+                                        @click="handlePasswordResolute(chapter)"
+                                        class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                        v-show="chapter.state === 'Activé'"
+                                    >
+                                        ✔️ Terminer
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal de création/édition -->
+    <ChapterModal
+      :show="showModal"
+      :chapter="editingChapter"
+      @close="closeModal"
+      @save="handleSave"
+    />
+
+    <!-- Modal de confirmation de suppression -->
+    <ChapterDeleteModal
+      :show="showDeleteModal"
+      :chapter="chapterToDelete"
+      @close="closeDeleteModal"
+      @confirm="handleDelete"
+    />
+
+    <!-- Modal de modification d'état -->
+    <ChapterStateModal
+        :show="showStateModal"
+        :chapter="editingChapter"
+        @close="closeStateModal"
+        @save="modifierEtatchapter"
+    />
+
+    <!-- Modal pour activer un chapter -->
+     <ChapterPasswordModal
+        :show="showPasswordActivateModal"
+        :chapter="editingChapter"
+        @close="closeStateModal"
+        @save="activateChapter"
+    />
+
+    <!-- Modal pour résoudre un chapter -->
+     <ChapterPasswordModal
+        :show="showPasswordResoluteModal"
+        :chapter="editingChapter"
+        @close="closeStateModal"
+        @save="resoluteChapter"
+    />
+
+</template>
