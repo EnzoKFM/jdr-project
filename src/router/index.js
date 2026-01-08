@@ -32,28 +32,6 @@ const routes = [
             path: "",
             name: "mj-campaign-detail",
           },
-          { 
-            path: '/chapitre', 
-            name: 'chapitreLayout', 
-            component: ChapterLayout, 
-            children: [
-              { 
-                path: '', 
-                name: 'listeChapitre', 
-                component: ListeChapitreView 
-              },
-              { 
-                path: ':id', 
-                name: 'viewChapitre', 
-                component: VoirChapitreView 
-              },
-              { 
-                path: 'ajout', 
-                name: 'ajoutChapitre', 
-                component: AjoutChapitreView 
-              }
-            ]
-          },
         ],
       },
     ],

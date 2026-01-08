@@ -2,6 +2,7 @@
 import { ref, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useCampaignStore } from "@/stores/campaignStore";
+import ChapterList from "../chapitres/ChapterList.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -218,8 +219,7 @@ const formatDate = (dateString) => {
         <div v-else-if="activeTab === 'chapters'">
           <h2 class="text-xl font-bold mb-4">📑 Gestion des Chapitres</h2>
           <div class="text-center py-12 bg-gray-50 rounded-lg">
-            <div class="text-6xl mb-4">🚧</div>
-            <p class="text-xl text-gray-600 mb-2">Section en développement</p>
+            <ChapterList />
           </div>
         </div>
 
