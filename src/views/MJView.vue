@@ -2,6 +2,7 @@
 import Header from "@/components/utils/Header.vue";
 import Footer from "@/components/utils/Footer.vue";
 import CampaignManager from "@/components/campaign/CampaignManager.vue";
+import { RouterView } from "vue-router";
 </script>
 
 <template>
@@ -11,7 +12,7 @@ import CampaignManager from "@/components/campaign/CampaignManager.vue";
     <Header />
 
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 sm:px-6 lg:px-8">
-      <CampaignManager />
+      <RouterView />
     </main>
 
     <Footer />

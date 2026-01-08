@@ -5,6 +5,7 @@ import MJView from "@/views/MJView.vue";
 import PlayerView from "@/views/PlayerView.vue";
 import NotFoundView from "@/views/NotFoundView.vue";
 import CampaignDetailView from "@/components/campaign/CampaignDetailView.vue";
+import CampaignManager from "@/components/campaign/CampaignManager.vue";
 
 const routes = [
   {
@@ -12,16 +13,28 @@ const routes = [
     name: "home",
     component: HomeView,
   },
+
+  // Route MJ
   {
     path: "/mj",
-    name: "mj",
     component: MJView,
-  },
-
-  {
-    path: "/mj/campaigns/:id",
-    name: "mj-campaign-detail",
-    component: CampaignDetailView,
+    children: [
+      {
+        path: "",
+        name: "mj",
+        component: CampaignManager,
+      },
+      {
+        path: "campaigns/:id",
+        component: CampaignDetailView,
+        children: [
+          {
+            path: "",
+            name: "mj-campaign-detail",
+          },
+        ],
+      },
+    ],
   },
 
   {
