@@ -45,6 +45,16 @@ export const useClueStore = defineStore('clues', () => {
         campaignStore.updateCampaign(campaignId.value, campaign.value)
     }
 
+    function takeClue(clueId){
+        campaign.value.players.forEach(player => {
+            const index = player.inventory.findIndex((id) => (id == clueId))
+            player.inventory.splice(index, 1)
+        });
+        const clue = _findClue(clueId)
+        clue.isGiven = false;
+        campaignStore.updateCampaign(campaignId.value, campaign.value)
+    }
+
     function duplicateClue(clueModel) {
         const {
             id,
@@ -82,5 +92,5 @@ export const useClueStore = defineStore('clues', () => {
         campaignStore.updateCampaign(campaignId.value, campaign.value)
     }
 
-    return { listClues, addClue, modifyClue, deleteClue, duplicateClue, giveClue, setCampaignId }
+    return { listClues, addClue, modifyClue, deleteClue, duplicateClue, giveClue, setCampaignId, takeClue }
 })

@@ -74,6 +74,10 @@
     const giveClueToAll = (clue) => {
         clueStore.giveClue(clue.id)
     }
+
+    const takeClueToAll = (clue) => {
+        clueStore.takeClue(clue.id)
+    }
 </script>
 
 <template>
@@ -145,6 +149,13 @@
                                 v-show="clue.isGiven == false"
                             >
                                 ✋ Donner à tous
+                            </button>
+                            <button
+                                @click="takeClueToAll(clue)"
+                                class="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-amber-600 hover:to-yellow-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                v-show="clue.isGiven == true"
+                            >
+                                ✊ Reprendre à tous
                             </button>
                         </td>
                     </tr>
