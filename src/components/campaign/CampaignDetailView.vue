@@ -245,7 +245,7 @@ const handleMoveDown = (chapter) => {
         <div v-else-if="activeTab === 'contents'">
           <h2 class="text-xl font-bold mb-4">🗂️ Contenus Réutilisables</h2>
           <div class="text-center py-12 bg-gray-50 rounded-lg">
-            <ContentDetails />
+            <ContentDetails :campaign-id="campaignId"/>
           </div>
         </div>
       </div>

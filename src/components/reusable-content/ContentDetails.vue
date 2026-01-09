@@ -1,8 +1,12 @@
 <script setup >
     import { ref } from 'vue';
     import ItemList from './items/ItemList.vue';
-import ClueList from './clues/ClueList.vue';
-import LocationList from './locations/LocationList.vue';
+    import ClueList from './clues/ClueList.vue';
+    import LocationList from './locations/LocationList.vue';
+
+    const props = defineProps({
+        campaignId : { type: String }
+    })
     
     // Onglet actif
     const activeTab = ref("locations");
@@ -36,17 +40,17 @@ import LocationList from './locations/LocationList.vue';
     </div>
     <div v-if="activeTab === 'locations'">
         <div class="text-center py-12 bg-gray-50 rounded-lg">
-            <LocationList />
+            <LocationList :campaign-id="props.campaignId"/>
         </div>
     </div>
     <div v-else-if="activeTab === 'items'">
         <div class="text-center py-12 bg-gray-50 rounded-lg">
-            <ItemList />
+            <ItemList :campaign-id="props.campaignId"/>
         </div>
     </div>
     <div v-else-if="activeTab === 'clues'">
         <div class="text-center py-12 bg-gray-50 rounded-lg">
-            <ClueList />
+            <ClueList :campaign-id="props.campaignId"/>
         </div>
     </div>
 </template>

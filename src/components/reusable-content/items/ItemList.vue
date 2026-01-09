@@ -4,7 +4,12 @@
     import ItemModal from './ItemModal.vue';
     import ItemDeleteModal from './ItemDeleteModal.vue';
 
+    const props = defineProps({
+        campaignId : { type: String }
+    })
+
     const itemStore = useItemStore()
+    itemStore.setCampaignId(props.campaignId)
 
     const editingItem = ref(null);
     const itemToDelete = ref(null);

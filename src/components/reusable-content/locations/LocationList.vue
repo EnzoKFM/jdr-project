@@ -4,7 +4,12 @@
     import LocationModal from './LocationModal.vue';
     import LocationDeleteModal from './LocationDeleteModal.vue';
 
+    const props = defineProps({
+        campaignId : { type: String }
+    })
+
     const locationStore = useLocationStore()
+    locationStore.setCampaignId(props.campaignId)
 
     const editingLocation = ref(null);
     const locationToDelete = ref(null);

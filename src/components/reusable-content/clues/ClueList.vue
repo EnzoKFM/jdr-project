@@ -4,7 +4,12 @@
     import ClueModal from './ClueModal.vue';
     import ClueDeleteModal from './ClueDeleteModal.vue';
 
+    const props = defineProps({
+        campaignId : { type: String }
+    })
+
     const clueStore = useClueStore()
+    clueStore.setCampaignId(props.campaignId)
 
     const editingClue = ref(null);
     const clueToDelete = ref(null);

@@ -1,13 +1,16 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { useCampaignStore } from './campaignStore'
-import { useRoute } from 'vue-router'
 
 export const useClueStore = defineStore('clues', () => {
     const campaignStore = useCampaignStore()
-    const route = useRoute();
 
-    const campaignId = computed(() => route.params.id);
+    const campaignId = ref(null);
+
+    function setCampaignId(id) {
+        campaignId.value = id
+    }
+
     const campaign = computed(() =>
         campaignStore.campaigns.find((c) => c.id === campaignId.value)
     );
@@ -75,5 +78,5 @@ export const useClueStore = defineStore('clues', () => {
         campaignStore.updateCampaign(campaignId.value, campaign.value)
     }
 
-    return { listClues, addClue, modifyClue, deleteClue, duplicateClue, giveClue }
+    return { listClues, addClue, modifyClue, deleteClue, duplicateClue, giveClue, setCampaignId }
 })
