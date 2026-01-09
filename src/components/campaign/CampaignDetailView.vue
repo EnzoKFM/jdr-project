@@ -3,6 +3,8 @@ import { ref, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useCampaignStore } from "@/stores/campaignStore";
 import ChapterList from "../chapitres/ChapterList.vue";
+import { getStatusIcon } from "../utils/campaignUtils";
+import { formatDate } from "../utils/dateUtils";
 
 const route = useRoute();
 const router = useRouter();
@@ -34,16 +36,6 @@ const handleExport = () => {
   campaignStore.exportCampaign(campaignId.value);
 };
 
-// Helpers
-const getStatusIcon = (status) => {
-  const icons = {
-    brouillon: "📝",
-    disponible: "✅",
-    active: "⭐",
-  };
-  return icons[status] || "📄";
-};
-
 const getStatusLabel = (status) => {
   const labels = {
     brouillon: "Brouillon",
@@ -62,15 +54,31 @@ const getStatusBadgeClass = (status) => {
   return classes[status] || "bg-gray-200 text-gray-700";
 };
 
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("fr-FR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+const handleMoveUp = (chapter) => {
+  const chapters = [...campaign.value.chapters];
+  const index = chapters.findIndex((c) => c.id === chapter.id);
+
+  if (index > 0) {
+    [chapters[index - 1], chapters[index]] = [
+      chapters[index],
+      chapters[index - 1],
+    ];
+
+    campaignStore.reorderChapters(campaignId.value, chapters);
+  }
+};
+
+const handleMoveDown = (chapter) => {
+  const chapters = [...campaign.value.chapters];
+  const index = chapters.findIndex((c) => c.id === chapter.id);
+
+  if (index < chapters.length - 1) {
+    [chapters[index], chapters[index + 1]] = [
+      chapters[index + 1],
+      chapters[index],
+    ];
+    campaignStore.reorderChapters(campaignId.value, chapters);
+  }
 };
 </script>
 
@@ -219,7 +227,7 @@ const formatDate = (dateString) => {
         <div v-else-if="activeTab === 'chapters'">
           <h2 class="text-xl font-bold mb-4">📑 Gestion des Chapitres</h2>
           <div class="text-center py-12 bg-gray-50 rounded-lg">
-            <ChapterList />
+            <ChapterList :campaign-id="campaignId" @move-up="handleMoveUp" @move-down="handleMoveDown" />
           </div>
         </div>
 

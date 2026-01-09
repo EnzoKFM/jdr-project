@@ -45,6 +45,11 @@ watch(
 
 const handleSubmit = () => {
   emit("save", { ...formData });
+
+  formData.name = "";
+  formData.status = "brouillon";
+  formData.description = "";
+  formData.mjComment = "";
 };
 </script>
 

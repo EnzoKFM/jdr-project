@@ -97,6 +97,9 @@ export const useCampaignStore = defineStore("campaign", {
         chapters: campaignData.chapters || [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        items: [],
+        clues: [],
+        locations: [],
       };
 
       // Si la campagne est active, mettre à jour activeCampaignId
