@@ -6,7 +6,6 @@ import PlayerView from "@/views/PlayerView.vue";
 import NotFoundView from "@/views/NotFoundView.vue";
 import CampaignDetailView from "@/components/campaign/CampaignDetailView.vue";
 import CampaignManager from "@/components/campaign/CampaignManager.vue";
-import QuestView from '@/views/QuestView.vue';
 
 const routes = [
   {
@@ -43,11 +42,6 @@ const routes = [
     name: "player",
     component: PlayerView,
   },
-  
-  { path: '/quetes',
-    name: 'quetes', 
-    component: QuestView,
-   },
 
   // Not Found
   {
