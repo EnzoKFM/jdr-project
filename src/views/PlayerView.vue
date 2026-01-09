@@ -200,15 +200,10 @@ const handleQuestAction = () => {
 
 const handleAvailableItemsForPlayer = computed(() => {
   const tab = [];
-  console.log("campaign.value : ", campaign.value);
-  console.log("selectedPlayer.value : ", selectedPlayer.value);
   if (selectedPlayer) {
     campaign.value.items.forEach((item) => {
-      console.log("dans le foreach item : ", item);
       if (item.playerId === selectedPlayer?.value?.id) {
-        console.log("rentre ici")
-        if (item.id === selectedPlayer.value.inventory.includes(item.id)) {
-          console.log("rentre ici 2")
+        if (selectedPlayer.value.inventory.includes(item.id)) {
           tab.push(item);
         }
       }
@@ -535,8 +530,7 @@ const handleAvailableItemsForPlayer = computed(() => {
                 class="text-xl font-bold text-gray-800 flex items-center gap-2"
               >
                 <span class="text-2xl">📑</span>
-                <!-- Objets -->
-                {{ handleAvailableItemsForPlayer}}
+                Objets
               </h3>
             </div>
 
@@ -549,23 +543,13 @@ const handleAvailableItemsForPlayer = computed(() => {
                 v-for="item in handleAvailableItemsForPlayer"
                 :key="item.id"
                 class="border-2 rounded-lg p-4"
-                :class="getChapterBorderClass(item.state)"
               >
                 <div class="flex justify-between items-start mb-2">
                   <div class="flex-1">
                     <div class="flex items-center gap-2 mb-1">
-                      <span class="text-xl">{{
-                        getChapterIcon(item.state)
-                      }}</span>
                       <h4 class="font-bold text-gray-800">
                         {{ item.name }}
                       </h4>
-                      <span
-                        class="px-2 py-1 text-xs font-bold rounded-full"
-                        :class="getChapterBadgeClass(item.state)"
-                      >
-                        {{ getChapterStatusLabel(item.state) }}
-                      </span>
                     </div>
                     <p class="text-sm text-gray-600 mb-2">
                       {{ item.description }}
