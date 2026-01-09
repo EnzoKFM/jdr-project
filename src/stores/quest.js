@@ -6,6 +6,10 @@ const useQuetesStore = defineStore('quetes', () => {
 
   const quetes = ref([]);
 
+   function initQuetes(initialQuetes = []) {
+    quetes.value = initialQuetes
+  }
+
   function trouverIndexQuete(queteId) {
     return quetes.value.findIndex(({ id }) => (id === queteId));
   }
@@ -13,36 +17,26 @@ const useQuetesStore = defineStore('quetes', () => {
     const indexQuete = trouverIndexQuete(queteId);
     return quetes.value[indexQuete];
   }
-    const queteSpecifique = computed(() => (trouverQuete));
+  
+  const queteSpecifique = computed(() => (trouverQuete));
 
-  // function ajouterQuete(nom, description, lieu, mdpActivation, mdpResolution, commentaire) {
-  //   quetes.value.push({
-  //     id: crypto.randomUUID(),
-  //     nom,
-  //     description,
-  //     lieu,
 
-  //     etat: 'inactive', // inactive | active | terminee | abandonnee
-
-  //     motDePasseActivation: mdpActivation,
-  //     motDePasseResolution: mdpResolution,
-
-  //     recompenses: [],
-  //     commentaire: commentaire || '',
-  //   });
-  // }
   function ajouterQuete(data) {
-    quetes.value.push({
-      id: crypto.randomUUID(),
-      nom: data.nom,
-      description: data.description,
-      lieu: data.lieu,
-      etat: 'inactive', // inactive | active | terminee | abandonnee
-      motDePasseActivation: data.motDePasseActivation,
-      motDePasseResolution: data.motDePasseResolution,
-      recompenses: data.recompenses || [],
-      commentaire: data.commentaire || '',
-    });
+    const newQuest = {
+        id: crypto.randomUUID(),
+        nom: data.nom,
+        description: data.description,
+        lieu: data.lieu || [],
+        etat: 'inactive', // inactive | active | terminee | abandonnee
+        motDePasseActivation: data.motDePasseActivation,
+        motDePasseResolution: data.motDePasseResolution,
+        recompenses: data.recompenses || [],
+        commentaire: data.commentaire || '',
+        chapterId: data.chapterId 
+    };
+
+    quetes.value.push(newQuest);
+    return newQuest;
   }
 
   function modifierQuete(questId, updates) {
@@ -59,7 +53,8 @@ const useQuetesStore = defineStore('quetes', () => {
       return null;
   }
 
-  function activerQueteMj(id) {
+  function activateMjQuest(id) {
+
     const quete = quetes.value.find(q => q.id === id);
     if (!quete) return false;
 
@@ -68,6 +63,7 @@ const useQuetesStore = defineStore('quetes', () => {
   }
 
   function activerQuete(id, motDePasse) {
+    console.log("Activation de la quête avec l'ID :", id);
     const quete = quetes.value.find(q => q.id === id);
     if (!quete) return false;
 
@@ -104,8 +100,10 @@ const useQuetesStore = defineStore('quetes', () => {
     etat: 'inactive',
   }
 
-  quetes.value.push(nouvelleQuete);
-}
+    quetes.value.push(nouvelleQuete);
+
+    return nouvelleQuete
+  }
 
   function supprimerQuete(id) {
     const indexQuete = trouverIndexQuete(id);
@@ -114,8 +112,9 @@ const useQuetesStore = defineStore('quetes', () => {
 
   return {
     quetes,
+    initQuetes,
     ajouterQuete,
-    activerQuete, activerQueteMj,
+    activerQuete, activateMjQuest,
     resoudreQuete,
     abandonnerQuete,
     queteSpecifique, modifierQuete, supprimerQuete, dupliquerQuete

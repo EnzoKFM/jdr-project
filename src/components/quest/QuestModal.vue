@@ -4,6 +4,7 @@ import { reactive, watch, computed } from "vue";
 const props = defineProps({
   show: Boolean,
   quest: Object,
+  chapters: Array,
 });
 
 const emit = defineEmits(["save", "close"]);
@@ -14,6 +15,7 @@ const form = reactive({
   lieu: "",
   motDePasseActivation: "",
   motDePasseResolution: "",
+  chapterId: "",
 });
 
 const isEditing = computed(() => props.quest !== null);
@@ -28,12 +30,14 @@ watch(
       form.lieu = q.lieu;
       form.motDePasseActivation = q.motDePasseActivation;
       form.motDePasseResolution = q.motDePasseResolution;
+      form.chapterId = q.chapterId;
     } else {
       form.nom = "";
       form.description = "";
       form.lieu = "";
       form.motDePasseActivation = "";
       form.motDePasseResolution = "";
+      form.chapterId = "";
     }
   },
   { immediate: true }
@@ -144,6 +148,23 @@ const handleSubmit = () => {
               (sera remplacé plus tard par une sélection)
             </p>
           </div>
+
+          <!-- Chapitre -->
+            <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                📚 Chapitre *
+            </label>
+            <select
+                v-model="form.chapterId"
+                required
+                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+            >
+                <option value="" disabled>-- Sélectionner un chapitre --</option>
+                <option v-for="chapter in chapters" :key="chapter.id" :value="chapter.id">
+                {{ chapter.name }}
+                </option>
+            </select>
+            </div>
 
           <!-- Boutons -->
           <div class="flex gap-3 pt-6">

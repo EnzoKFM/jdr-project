@@ -33,7 +33,7 @@ defineEmits([
     <!-- Liste -->
     <div v-else class="space-y-4">
       <QuestCard
-        v-for="quest in quests"
+        v-for="quest in quests.filter(q => q && q.id)"
         :key="quest.id"
         :quest="quest"
         @activerMj="$emit('activerMj', $event)"
