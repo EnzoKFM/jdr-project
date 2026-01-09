@@ -1,11 +1,9 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useCampaignStore } from "./campaignStore";
-import { useRoute } from "vue-router";
 
 export const useChapterStore = defineStore("chapters", () => {
   const campaignStore = useCampaignStore();
-  const route = useRoute();
 
   const campaignId = ref(null);
 
@@ -26,7 +24,7 @@ export const useChapterStore = defineStore("chapters", () => {
   }
 
   function listChapters() {
-    return campaign.value.chapters;
+    return campaign.value.chapters
   }
 
   function addChapter(newChapter) {
@@ -83,12 +81,9 @@ export const useChapterStore = defineStore("chapters", () => {
     const chapter = chapters.find(
       (c) => c.activationMdp === passwordActivate.value
     );
-    console.log("chapter trouvé : ", chapter);
 
     if (chapter) {
-      campaign.value.chapters.find(
-        (c) => c.activationMdp === passwordActivate.value
-      ).state = "Actif";
+      chapter.state = "Activé";
       campaignStore.updateCampaign(campaignId.value, campaign.value);
       return true;
     }
@@ -102,9 +97,7 @@ export const useChapterStore = defineStore("chapters", () => {
     const chapter = chapters.find((c) => c.resolutionMdp === passwordComplete);
 
     if (chapter) {
-      campaign.value.chapters.find(
-        (c) => c.resolutionMdp === passwordComplete
-      ).state = "Terminé";
+      chapter.state = "Terminé";
       campaignStore.updateCampaign(campaignId.value, campaign.value);
       return true;
     }

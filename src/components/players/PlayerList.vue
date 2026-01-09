@@ -60,23 +60,23 @@
                             {{ p.comment || '—' }}
                         </td>
 
-                        <td class="flex gap-6 py-4 justify-center">
+                        <td class="flex gap-6 py-4 px-6 justify-center">
 
                             <button
                                 @click="emit('edit', p)"
-                                class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 cursor-pointer"
                             >
                                 ✏️ Modifier
                             </button>
                             <button
                                 @click="emit('delete', p)"
-                                class="bg-gradient-to-r from-rose-500 to-red-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-rose-600 hover:to-red-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                class="bg-gradient-to-r from-rose-500 to-red-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-rose-600 hover:to-red-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 cursor-pointer"
                             >
                                 🗑️ Supprimer
                             </button>
                             <button
                                 @click="emit('duplicate', p)"
-                                class="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-amber-600 hover:to-yellow-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                class="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-amber-600 hover:to-yellow-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 cursor-pointer"
                             >
                                 📚 Dupliquer
                             </button>

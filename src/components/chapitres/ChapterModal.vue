@@ -114,12 +114,12 @@
             <label class="block text-sm font-semibold text-gray-700 mb-2">
               🔐 Mot de passe d'activation
             </label>
-            <textarea
+            <input
               v-model="formData.activationMdp"
               rows="3"
               class="w-full px-4 py-3 border-2 border-yellow-300 bg-yellow-50 rounded-lg focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all resize-none"
               placeholder="Permet d'activer le chapitre du côté joueur"
-            ></textarea>
+            />
             <p class="text-xs text-gray-500 mt-1">
               ⚠️ N'oubliez pas le mot de passe
             </p>
@@ -130,12 +130,12 @@
             <label class="block text-sm font-semibold text-gray-700 mb-2">
               🔐 Mot de passe de résolution
             </label>
-            <textarea
+            <input
               v-model="formData.resolutionMdp"
               rows="3"
               class="w-full px-4 py-3 border-2 border-yellow-300 bg-yellow-50 rounded-lg focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all resize-none"
               placeholder="Permet de terminer le chapitre côté joueur"
-            ></textarea>
+            />
             <p class="text-xs text-gray-500 mt-1">
               ⚠️ N'oubliez pas le mot de passe
             </p>

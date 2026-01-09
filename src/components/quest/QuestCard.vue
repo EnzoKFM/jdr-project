@@ -30,10 +30,10 @@ defineEmits([
 
 const statusLabel = computed(() => {
   const labels = {
-    inactive: "Inactive",
-    active: "Active",
-    terminee: "Terminée",
-    abandonnee: "Abandonnée",
+    "inactive": "Inactive",
+    "active": "Activé",
+    "terminée": "Terminé",
+    "abandonnée": "Abandonnée",
 
   };
   return labels[props.quest.etat];
@@ -84,7 +84,7 @@ const statusClass = computed(() => {
       <button
         v-if="quest.etat === 'inactive'"
         @click="$emit('activerMj', quest.id)"
-        class="btn btn-blue"
+        class="btn btn-blue cursor-pointer"
       >
         ⭐ Activer (MJ)
       </button>
@@ -92,21 +92,21 @@ const statusClass = computed(() => {
       <button
         v-if="quest.etat !== 'terminee' && quest.etat !== 'abandonnee'"
         @click="$emit('abandonner', quest.id)"
-        class="btn btn-orange"
+        class="btn btn-orange cursor-pointer"
       >
         ❌ Abandonner
       </button>
 
       <button
         @click="$emit('edit', quest.id)"
-        class="btn btn-cyan"
+        class="btn btn-cyan cursor-pointer"
       >
         ✏️ Modifier
       </button>
 
       <button
         @click="$emit('duplicate', quest.id)"
-        class="btn btn-indigo"
+        class="btn btn-indigo cursor-pointer"
       >
         📋 Dupliquer
       </button>
@@ -115,7 +115,7 @@ const statusClass = computed(() => {
         <button
           @click="$emit('move-up', quest)"
           :disabled="index === 0"
-          class="px-4 py-1 rounded-lg font-semibold transition-all"
+          class="px-4 py-1 rounded-lg font-semibold transition-all cursor-pointer"
           :class="
             index === 0
               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -128,7 +128,7 @@ const statusClass = computed(() => {
         <button
           @click="$emit('move-down', quest)"
           :disabled="index === quests.length - 1"
-          class="px-4 py-1 rounded-lg font-semibold transition-all"
+          class="px-4 py-1 rounded-lg font-semibold transition-all cursor-pointer"
           :class="
             index === quests.length - 1
               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -141,7 +141,7 @@ const statusClass = computed(() => {
 
       <button
         @click="$emit('delete', quest.id)"
-        class="btn btn-red ml-auto"
+        class="btn btn-red ml-auto cursor-pointer"
       >
         🗑️ Supprimer
       </button>

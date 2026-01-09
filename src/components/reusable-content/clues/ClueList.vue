@@ -9,7 +9,6 @@
     })
 
     const clueStore = useClueStore()
-    clueStore.setCampaignId(props.campaignId)
 
     const editingClue = ref(null);
     const clueToDelete = ref(null);
@@ -123,36 +122,36 @@
                             {{ clue.mjComment }}
                         </td>
 
-                        <td class="flex gap-6 py-4 justify-center">
+                        <td class="flex gap-6 py-4 px-6 justify-center">
 
                             <button
                                 @click="handleEdit(clue)"
-                                class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 cursor-pointer"
                             >
                                 ✏️ Modifier
                             </button>
                             <button
                                 @click="handleDeleteConfirm(clue)"
-                                class="bg-gradient-to-r from-rose-500 to-red-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-rose-600 hover:to-red-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                class="bg-gradient-to-r from-rose-500 to-red-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-rose-600 hover:to-red-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 cursor-pointer"
                             >
                                 🗑️ Supprimer
                             </button>
                             <button
                                 @click="duplicateItem(clue)"
-                                class="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-amber-600 hover:to-yellow-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                class="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-amber-600 hover:to-yellow-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 cursor-pointer"
                             >
                                 📚 Dupliquer
                             </button>
                             <button
                                 @click="giveClueToAll(clue)"
-                                class="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-amber-600 hover:to-yellow-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                class="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-amber-600 hover:to-yellow-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 cursor-pointer"
                                 v-show="clue.isGiven == false"
                             >
                                 ✋ Donner à tous
                             </button>
                             <button
                                 @click="takeClueToAll(clue)"
-                                class="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-amber-600 hover:to-yellow-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                class="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-amber-600 hover:to-yellow-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 cursor-pointer"
                                 v-show="clue.isGiven == true"
                             >
                                 ✊ Reprendre à tous

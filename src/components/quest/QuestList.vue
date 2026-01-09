@@ -29,9 +29,7 @@ const showModalQuest = ref(false);
 
 const questStore = useQuetesStore();
 const chapterStore = useChapterStore()
-chapterStore.setCampaignId(props.campaignid);
 const locationStore = useLocationStore();
-locationStore.setCampaignId(props.campaignid);
 
 const handleEditQuest = (quest) => {
   editingQuest.value = quest;

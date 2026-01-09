@@ -9,7 +9,6 @@
     })
 
     const locationStore = useLocationStore()
-    locationStore.setCampaignId(props.campaignId)
 
     const editingLocation = ref(null);
     const locationToDelete = ref(null);
@@ -102,7 +101,7 @@
                         :key="location.id"
                     >
                         <td
-                            class="px-6 py-4 font-medium text-gray-900"
+                            class="px-6 py-4 px-6 font-medium text-gray-900"
                         >
                             {{ location.name }}
                         </td>
@@ -119,19 +118,19 @@
 
                             <button
                                 @click="handleEdit(location)"
-                                class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 cursor-pointer"
                             >
                                 ✏️ Modifier
                             </button>
                             <button
                                 @click="handleDeleteConfirm(location)"
-                                class="bg-gradient-to-r from-rose-500 to-red-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-rose-600 hover:to-red-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                class="bg-gradient-to-r from-rose-500 to-red-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-rose-600 hover:to-red-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 cursor-pointer"
                             >
                                 🗑️ Supprimer
                             </button>
                             <button
                                 @click="duplicateItem(location)"
-                                class="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-amber-600 hover:to-yellow-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                class="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-amber-600 hover:to-yellow-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 cursor-pointer"
                             >
                                 📚 Dupliquer
                             </button>
