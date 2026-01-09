@@ -6,6 +6,7 @@ import ChapterList from "../chapitres/ChapterList.vue";
 import { getStatusIcon } from "../utils/campaignUtils";
 import { formatDate } from "../utils/dateUtils";
 import ContentDetails from "../reusable-content/ContentDetails.vue";
+import PlayersSection from "../players/PlayersSection.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -234,11 +235,12 @@ const handleMoveDown = (chapter) => {
 
         <!-- Onglet Joueurs (placeholder pour collègue) -->
         <div v-else-if="activeTab === 'players'">
-          <h2 class="text-xl font-bold mb-4">👥 Gestion des Joueurs</h2>
-          <div class="text-center py-12 bg-gray-50 rounded-lg">
-            <div class="text-6xl mb-4">🚧</div>
-            <p class="text-xl text-gray-600 mb-2">Section en développement</p>
-          </div>
+            <h2 class="text-xl font-bold mb-4">👥 Gestion des Joueurs</h2>
+
+            <PlayersSection
+                :campaign-id="campaignId"
+                @update="campaignStore.updateCampaign(campaign.id, $event)"
+            />
         </div>
 
         <!-- Onglet Contenus (placeholder pour collègue) -->
