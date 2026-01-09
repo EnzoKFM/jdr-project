@@ -15,12 +15,6 @@
 
     const playerStore = usePlayerStore();
 
-    watchEffect(() => {
-        if (props.campaignId) {
-            playerStore.setCampaignId(props.campaignId);
-        }
-    });
-
     const showModal = ref(false);
     const showDeleteModal = ref(false);
     const editedPlayer = ref(null);

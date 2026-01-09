@@ -2,9 +2,11 @@
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { useInterfaceStore } from "@/stores/interfaceStore";
+import { useCampaignStore } from "@/stores/campaignStore";
 
 const router = useRouter();
 const interfaceStore = useInterfaceStore();
+const campaignStore = useCampaignStore();
 
 // Icon de l'autre mode
 const targetModeIcon = computed(() => (interfaceStore.isMJMode ? "🎮" : "🎭"));
@@ -23,6 +25,10 @@ const buttonClass = computed(() =>
 
 // Basculer entre les modes
 const toggleMode = () => {
+  if(campaignStore.allCampaigns.length == 0) {
+    alert("Vous devez créer une campagne avant de pouvoir aller en mode joueur")
+    return;
+  }
   if (interfaceStore.isMJMode) {
     interfaceStore.switchToPlayer();
     router.push({ name: "player" });

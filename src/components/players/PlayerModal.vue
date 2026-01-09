@@ -43,6 +43,10 @@
 
     const handleSubmit = () => {
         emit("save", { ...formData });
+        formData.name = "";
+        formData.state = "vivant";
+        formData.description = "";
+        formData.comment = "";
     };
 </script>
 

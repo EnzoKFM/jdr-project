@@ -45,6 +45,13 @@ watch(
 
 const handleSubmit = () => {
   emit("save", { ...form });
+
+  form.nom = "";
+  form.description = "";
+  form.lieu = "";
+  form.motDePasseActivation = "";
+  form.motDePasseResolution = "";
+  form.chapterId = "";
 };
 </script>
 
@@ -131,22 +138,6 @@ const handleSubmit = () => {
               class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
               placeholder="Mot de passe de résolution"
             />
-          </div>
-
-          <!-- Récompenses -->
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">
-              🎁 Récompenses
-            </label>
-            <input
-              v-model="form.recompenses"
-              type="text"
-              class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
-              placeholder="Or, objets, expérience..."
-            />
-            <p class="text-xs text-gray-500 mt-1">
-              (sera remplacé plus tard par une sélection)
-            </p>
           </div>
 
           <!-- Chapitre -->

@@ -7,10 +7,14 @@ import { getStatusIcon } from "../utils/campaignUtils";
 import { formatDate } from "../utils/dateUtils";
 import ContentDetails from "../reusable-content/ContentDetails.vue";
 import PlayersSection from "../players/PlayersSection.vue";
+import { useChapterStore } from "@/stores/chaptersStore";
+import { usePlayerStore } from "@/stores/playerStore";
+import { useClueStore } from "@/stores/cluesStore";
+import { useItemStore } from "@/stores/itemsStore";
+import { useLocationStore } from "@/stores/locationsStore";
 
 const route = useRoute();
 const router = useRouter();
-const campaignStore = useCampaignStore();
 
 // Onglet actif
 const activeTab = ref("overview");
@@ -24,10 +28,24 @@ const tabs = [
 ];
 
 // Récupérer la campagne
+const campaignStore = useCampaignStore();
 const campaignId = computed(() => route.params.id);
 const campaign = computed(() =>
   campaignStore.campaigns.find((c) => c.id === campaignId.value)
 );
+
+// Mettre à jour TOUS les stores
+const chapterStore = useChapterStore()
+const playerStore = usePlayerStore()
+const clueStore = useClueStore()
+const itemStore = useItemStore()
+const locationStore = useLocationStore()
+
+chapterStore.setCampaignId(campaignId.value)
+playerStore.setCampaignId(campaignId.value)
+clueStore.setCampaignId(campaignId.value)
+itemStore.setCampaignId(campaignId.value)
+locationStore.setCampaignId(campaignId.value)
 
 // Navigation
 const goBack = () => {

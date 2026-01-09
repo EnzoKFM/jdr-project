@@ -1,10 +1,13 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { useCampaignStore } from './campaignStore'
+import { useItemStore } from './itemsStore'
 
 export const usePlayerStore = defineStore('players', () => {
     const campaignStore = useCampaignStore()
     const campaignId = ref(null)
+
+    const itemStore = useItemStore()
 
     function setCampaignId(id) {
         campaignId.value = id
@@ -33,7 +36,8 @@ export const usePlayerStore = defineStore('players', () => {
             state: playerData.state ?? 'vivant',
             description: playerData.description ?? '',
             comment: playerData.comment ?? '',
-            inventory: []
+            inventory: [],
+            activeLocation: '',
         })
 
         campaignStore.updateCampaign(campaignId.value, campaign.value)
@@ -51,6 +55,13 @@ export const usePlayerStore = defineStore('players', () => {
     }
 
     function deletePlayer(playerId) {
+        const player = _findPlayer(playerId)
+        player.inventory.forEach(element => {
+            const type = element.split('_')[0]
+            if(type == 'item'){
+                itemStore.unlinkItem(element, playerId, campaign)
+            }
+        });
         const index = _findPlayerIndex(playerId)
         if (index === -1) return
 
@@ -81,6 +92,10 @@ export const usePlayerStore = defineStore('players', () => {
         updatePlayer(playerId, { state })
     }
 
+    function changePlayerLocation(playerId, location) {
+        updatePlayer(playerId, { activeLocation: location })
+    }
+
     return {
         setCampaignId,
         listPlayers,
@@ -88,6 +103,7 @@ export const usePlayerStore = defineStore('players', () => {
         updatePlayer,
         deletePlayer,
         duplicatePlayer,
-        changePlayerState
+        changePlayerState,
+        changePlayerLocation
     }
 })

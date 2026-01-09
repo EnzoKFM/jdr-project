@@ -1,16 +1,18 @@
 <script setup>
+import { computed, ref, onMounted } from "vue";
 import Header from "@/components/utils/Header.vue";
 import Footer from "@/components/utils/Footer.vue";
 import { useCampaignStore } from "@/stores/campaignStore";
 import { useLocationStore } from "@/stores/locationsStore";
 import { useChapterStore } from "@/stores/chaptersStore";
-import { computed, ref, onMounted } from "vue";
 import useQuetesStore from "@/stores/quest";
+import { usePlayerStore } from "@/stores/playerStore";
 
 const campaignStore = useCampaignStore();
 const locationStore = useLocationStore();
 const chapterStore = useChapterStore();
 const questStore = useQuetesStore();
+const playerStore = usePlayerStore();
 
 // Récupérer la campagne
 const campaignId = computed(() => campaignStore.activeCampaignId);
@@ -23,15 +25,16 @@ const campaign = computed(() => {
 });
 locationStore.setCampaignId(campaignId.value);
 chapterStore.setCampaignId(campaignId.value);
+playerStore.setCampaignId(campaignId.value)
 
 onMounted(() => {
   // initialQuetes = toutes les quêtes de tes chapitres
+  if(campaignId.value == null){
+    return;
+  }
   const initialQuetes = chapterStore.listChapters().flatMap(c => c.quests)
   questStore.initQuetes(initialQuetes)
 })
-
-locationStore.setCampaignId(campaignId.value);
-chapterStore.setCampaignId(campaignId.value);
 
 const selectedPlayerId = ref("");
 const searchQuery = ref("");
@@ -67,6 +70,16 @@ const progressPercentage = computed(() =>
       )
     : 0
 );
+
+// Lieu actif du joueur choisi
+const selectedPlayerActiveLocation = computed(() => {
+  const location = availableLocations.value.find(({id}) => (id == selectedPlayer.value.activeLocation))
+  if(location){
+    return location.name
+  } else {
+    return 'Aucun'
+  }
+})
 
 // Chapitres filtrés
 const filteredChapters = computed(() => {
@@ -126,7 +139,7 @@ const getChapterBadgeClass = (state) => {
 const getChapterStatusLabel = (state) => {
   const labels = {
     Terminé: "✅ TERMINÉ",
-    Activé: "🟢 ACTIF",
+    Activé: "🟢 EN COURS",
     Inactif: "VERROUILLÉ",
     abandoned: "❌ ABANDONNÉ",
   };
@@ -135,30 +148,30 @@ const getChapterStatusLabel = (state) => {
 
 const getQuestBorderClass = (state) => {
   const classes = {
-    Terminé: "border-green-500",
-    Actif: "border-blue-500",
-    Inactif: "border-gray-400",
-    abandoned: "border-red-500",
+    "terminée": "border-green-500",
+    "active": "border-blue-500",
+    "inactive": "border-gray-400",
+    "abandonnée": "border-red-500",
   };
   return classes[state] || "border-gray-400";
 };
 
 const getQuestBadgeClass = (state) => {
   const classes = {
-    Terminé: "bg-green-100 text-green-700",
-    Actif: "bg-blue-100 text-blue-700",
-    Inactif: "bg-gray-200 text-gray-600",
-    abandoned: "bg-red-100 text-red-700",
+    "terminée": "bg-green-100 text-green-700",
+    "active": "bg-blue-100 text-blue-700",
+    "inactive": "bg-gray-200 text-gray-600",
+    "abandonnée": "bg-red-100 text-red-700",
   };
   return classes[state] || "bg-gray-200 text-gray-600";
 };
 
 const getQuestStatusLabel = (state) => {
   const labels = {
-    Terminé: "TERMINÉE",
-    Actif: "ACTIF",
-    Inactif: "VERROUILLÉE",
-    abandoned: "ABANDONNÉE",
+    "terminée": "TERMINÉE",
+    "active": "EN COURS",
+    "inactive": "VERROUILLÉE",
+    "abandonnée": "ABANDONNÉE",
   };
   return labels[state] || state;
 };
@@ -166,11 +179,10 @@ const getQuestStatusLabel = (state) => {
 const availableLocations = computed(() => {
   const locations = locationStore.listLocations();
   return locations;
-  // return ["Taverne du Dragon", "Forêt Maudite", "Temple Ancien"];
 });
 
 const handleMove = () => {
-  alert(`TODO : Déplacement vers ${moveToLocation.value}`);
+  playerStore.changePlayerLocation(selectedPlayerId.value, moveToLocation.value)
 };
 
 const handleActivateChapter = () => {
@@ -194,8 +206,6 @@ const handleCompleteChapter = () => {
   } else {
     alert("Mot de passe incorrect");
   }
-
-  // alert("TODO : Complétion du chapitre");
 };
 
 const handleQuestAction = () => {
@@ -223,7 +233,8 @@ const handleAvailableItemsForPlayer = computed(() => {
   if (selectedPlayer) {
     campaign.value.items.forEach((item) => {
       if (item.playerId === selectedPlayer?.value?.id) {
-        if (item.id === selectedPlayer.value.inventory.includes(item.id)) {
+        console.log(selectedPlayer.value.inventory)
+        if (selectedPlayer.value.inventory.includes(item.id)) {
           tab.push(item);
         }
       }
@@ -345,7 +356,7 @@ const handleAvailableItemsForPlayer = computed(() => {
                             <div class="flex justify-between items-center">
                               <div class="flex-1">
                                 <div class="flex items-center gap-2 mb-1">
-                                  <span class="text-lg">🎯</span>
+                                  <span class="text-xl">🎯</span>
                                   <span class="font-semibold text-sm">{{
                                     quest.nom
                                   }}</span>
@@ -437,6 +448,7 @@ const handleAvailableItemsForPlayer = computed(() => {
                 <label class="block text-sm font-semibold text-gray-700 mb-2"
                   >📍 Se déplacer</label
                 >
+                <p class="text-sm mb-2">Lieu actif : {{ selectedPlayerActiveLocation  }}</p>
                 <select
                   v-model="moveToLocation"
                   class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg text-sm mb-2"
@@ -541,116 +553,7 @@ const handleAvailableItemsForPlayer = computed(() => {
             </div>
           </div>
         </div>
-
-        <!-- COLONNE objects -->
-        <div class="lg:col-span-2 space-y-6">
-          <div class="bg-white rounded-lg shadow-lg p-6">
-            <div class="flex justify-between items-center mb-4">
-              <h3
-                class="text-xl font-bold text-gray-800 flex items-center gap-2"
-              >
-                <span class="text-2xl">📑</span>
-                <!-- Objets -->
-                {{ handleAvailableItemsForPlayer}}
-              </h3>
-            </div>
-
-            <!-- Liste des chapitres/quêtes filtrés -->
-            <div
-              v-if="handleAvailableItemsForPlayer.length > 0"
-              class="space-y-4"
-            >
-              <div
-                v-for="item in handleAvailableItemsForPlayer"
-                :key="item.id"
-                class="border-2 rounded-lg p-4"
-                :class="getChapterBorderClass(item.state)"
-              >
-                <div class="flex justify-between items-start mb-2">
-                  <div class="flex-1">
-                    <div class="flex items-center gap-2 mb-1">
-                      <span class="text-xl">{{
-                        getChapterIcon(item.state)
-                      }}</span>
-                      <h4 class="font-bold text-gray-800">
-                        {{ item.name }}
-                      </h4>
-                      <span
-                        class="px-2 py-1 text-xs font-bold rounded-full"
-                        :class="getChapterBadgeClass(item.state)"
-                      >
-                        {{ getChapterStatusLabel(item.state) }}
-                      </span>
-                    </div>
-                    <p class="text-sm text-gray-600 mb-2">
-                      {{ item.description }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Aucun résultat -->
-            <div v-else class="text-center py-8 text-gray-500">
-              <div class="text-4xl mb-2">🔍</div>
-              <p>Aucun object trouvé</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- COLONNE indices -->
-        <div class="lg:col-span-2 space-y-6">
-          <div class="bg-white rounded-lg shadow-lg p-6">
-            <div class="flex justify-between items-center mb-4">
-              <h3
-                class="text-xl font-bold text-gray-800 flex items-center gap-2"
-              >
-                <span class="text-2xl">📑</span>
-                Indices
-              </h3>
-            </div>
-
-            <!-- Liste des chapitres/quêtes filtrés -->
-            <div v-if="campaign.clues.length > 0" class="space-y-4">
-              <div
-                v-for="item in campaign.clues"
-                :key="item.id"
-                class="border-2 rounded-lg p-4"
-                :class="getChapterBorderClass(item.state)"
-              >
-                <div class="flex justify-between items-start mb-2">
-                  <div class="flex-1">
-                    <div class="flex items-center gap-2 mb-1">
-                      <span class="text-xl">{{
-                        getChapterIcon(item.state)
-                      }}</span>
-                      <h4 class="font-bold text-gray-800">
-                        {{ item.name }}
-                      </h4>
-                      <span
-                        class="px-2 py-1 text-xs font-bold rounded-full"
-                        :class="getChapterBadgeClass(item.state)"
-                      >
-                        {{ getChapterStatusLabel(item.state) }}
-                      </span>
-                    </div>
-                    <p class="text-sm text-gray-600 mb-2">
-                      {{ item.description }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Aucun résultat -->
-            <div v-else class="text-center py-8 text-gray-500">
-              <div class="text-4xl mb-2">🔍</div>
-              <p>Aucun indice trouvé</p>
-            </div>
-          </div>
-        </div>
       </div>
-
       <!-- Si aucune campagne active -->
       <div v-else class="bg-white rounded-lg shadow-lg p-12 text-center">
         <div class="text-6xl mb-6">🎮</div>
@@ -663,6 +566,112 @@ const handleAvailableItemsForPlayer = computed(() => {
         <p class="text-sm text-gray-500">
           Attendez que le MJ lance une campagne depuis son interface.
         </p>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-lg" v-if="selectedPlayer != null">
+        <!-- COLONNE objects -->
+        <div class="lg:col-span-2 space-y-6 mt-6">
+          <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+              <h3
+                class="text-xl font-bold text-gray-800 flex items-center gap-2"
+              >
+                <span class="text-2xl">🎁</span>
+                <!-- Objets -->
+                Objets
+              </h3>
+            </div>
+
+            <!-- Liste des objets -->
+            <div
+              v-if="handleAvailableItemsForPlayer.length > 0"
+              class="space-y-4"
+            >
+              <div
+                v-for="item in handleAvailableItemsForPlayer"
+                :key="item.id"
+                class="flex items-start gap-4 rounded-xl border p-4 transition hover:shadow-md hover:bg-gray-50 border-gray-300"
+              >
+                <!-- Icône -->
+                <div
+                  class="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 text-gray-600 text-xl font-bold"
+                >
+                  🎒
+                </div>
+
+                <!-- Contenu -->
+                <div class="flex-1">
+                  <div class="flex items-center justify-between">
+                    <h4 class="font-semibold text-gray-900">
+                      {{ item.name }}
+                    </h4>
+                  </div>
+
+                  <p class="mt-1 text-sm text-gray-600">
+                    {{ item.description }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Aucun résultat -->
+            <div v-else class="text-center py-8 text-gray-500">
+              <div class="text-4xl mb-2">🔍</div>
+              <p>Aucun objet trouvé</p>
+            </div>
+          </div>
+        </div>
+
+        <hr>
+
+        <!-- COLONNE indices -->
+        <div class="lg:col-span-2 space-y-6">
+          <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+              <h3
+                class="text-xl font-bold text-gray-800 flex items-center gap-2"
+              >
+                <span class="text-2xl">📑</span>
+                Indices
+              </h3>
+            </div>
+
+            <!-- Liste des indices -->
+            <div v-if="campaign.clues.length > 0" class="space-y-4">
+              <div
+                v-for="item in campaign.clues"
+                :key="item.id"
+                class="flex items-start gap-4 rounded-xl border p-4 transition hover:shadow-md hover:bg-gray-50 border-gray-300"
+                v-show="item.isGiven === true"
+              >
+                <!-- Icône -->
+                <div
+                  class="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 text-gray-600 text-xl font-bold"
+                >
+                  🔍
+                </div>
+
+                <!-- Contenu -->
+                <div class="flex-1">
+                  <div class="flex items-center justify-between">
+                    <h4 class="font-semibold text-gray-900">
+                      {{ item.name }}
+                    </h4>
+                  </div>
+
+                  <p class="mt-1 text-sm text-gray-600">
+                    {{ item.description }}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <!-- Aucun résultat -->
+            <div v-else class="text-center py-8 text-gray-500">
+              <div class="text-4xl mb-2">🔍</div>
+              <p>Aucun indice trouvé</p>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
 

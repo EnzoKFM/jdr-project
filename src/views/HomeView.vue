@@ -1,9 +1,11 @@
 <script setup>
 import { useRouter } from "vue-router";
 import { useInterfaceStore } from "@/stores/interfaceStore";
+import { useCampaignStore } from "@/stores/campaignStore";
 
 const router = useRouter();
 const interfaceStore = useInterfaceStore();
+const campaignStore = useCampaignStore()
 
 const goToMJ = () => {
   interfaceStore.switchToMJ();
@@ -11,6 +13,7 @@ const goToMJ = () => {
 };
 
 const goToPlayer = () => {
+  if(campaignStore.allCampaigns.length == 0) return;
   interfaceStore.switchToPlayer();
   router.push({ name: "player" });
 };
@@ -37,8 +40,7 @@ const goToPlayer = () => {
       <div class="grid md:grid-cols-2 gap-8">
         <!-- Carte MJ -->
         <div
-          @click="goToMJ"
-          class="bg-white rounded-2xl shadow-2xl p-8 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-3xl"
+          class="bg-white rounded-2xl shadow-2xl p-8 transform transition-all duration-300 hover:scale-105 hover:shadow-3xl"
         >
           <div class="text-center">
             <div class="text-6xl mb-4">🎭</div>
@@ -47,7 +49,8 @@ const goToPlayer = () => {
               Créez et gérez vos campagnes de jeu de rôle.
             </p>
             <button
-              class="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white py-3 rounded-lg font-semibold hover:from-pink-600 hover:to-rose-600 transition-all"
+              @click="goToMJ"
+              class="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white py-3 rounded-lg font-semibold hover:from-pink-600 hover:to-rose-600 transition-all cursor-pointer"
             >
               Accéder au mode MJ
             </button>
@@ -56,8 +59,7 @@ const goToPlayer = () => {
 
         <!-- Carte Joueur -->
         <div
-          @click="goToPlayer"
-          class="bg-white rounded-2xl shadow-2xl p-8 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-3xl"
+          class="bg-white rounded-2xl shadow-2xl p-8 transform transition-all duration-300 hover:scale-105 hover:shadow-3xl"
         >
           <div class="text-center">
             <div class="text-6xl mb-4">🎮</div>
@@ -65,8 +67,16 @@ const goToPlayer = () => {
             <p class="text-gray-600 mb-6">
               Suivez votre progression et gérez votre inventaire.
             </p>
+            <p 
+              class="text-red-600 font-bold mb-6"
+              v-show="campaignStore.allCampaigns.length == 0"
+            >
+              Avant de pouvoir aller en joueur, veuillez créer au moins une campagne.
+            </p>
             <button
-              class="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-cyan-600 transition-all"
+              @click="goToPlayer"
+              class="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-cyan-600 transition-all cursor-pointer"
+              v-show="campaignStore.allCampaigns.length != 0"
             >
               Accéder au mode Joueur
             </button>

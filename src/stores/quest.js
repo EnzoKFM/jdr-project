@@ -27,7 +27,7 @@ const useQuetesStore = defineStore('quetes', () => {
         nom: data.nom,
         description: data.description,
         lieu: data.lieu || [],
-        etat: 'inactive', // inactive | active | terminee | abandonnee
+        etat: 'inactive',
         motDePasseActivation: data.motDePasseActivation,
         motDePasseResolution: data.motDePasseResolution,
         recompenses: data.recompenses || [],
@@ -67,7 +67,7 @@ const useQuetesStore = defineStore('quetes', () => {
       );
 
       if (quete) {
-        quete.etat = "Actif";
+        quete.etat = "active";
         return true;
       }
 
@@ -78,7 +78,7 @@ const useQuetesStore = defineStore('quetes', () => {
     const quete = quetes.value.find((c) => c.motDePasseResolution === passwordComplete);
 
     if (quete) {
-      quete.etat = "Terminé";
+      quete.etat = "terminée";
       return true;
     }
 
@@ -87,7 +87,7 @@ const useQuetesStore = defineStore('quetes', () => {
 
   function abandonnerQuete(id) {
     const quete = quetes.value.find(q => q.id === id);
-    if (quete) quete.etat = 'abandonnee';
+    if (quete) quete.etat = 'abandonnée';
   }
 
   function dupliquerQuete(id) {
