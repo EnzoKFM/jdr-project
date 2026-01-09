@@ -29,7 +29,7 @@ export const useItemStore = defineStore('items', () => {
 
     function addItem(newItem) {
         campaign.value.items.push({
-            id: crypto.randomUUID(),
+            id: "item_" + crypto.randomUUID(),
             ...newItem,
             playerId: "",
         })

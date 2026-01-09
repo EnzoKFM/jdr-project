@@ -29,7 +29,7 @@ export const useClueStore = defineStore('clues', () => {
 
     function addClue(newClue) {
         campaign.value.clues.push({
-            id: crypto.randomUUID(),
+            id: "clue_" + crypto.randomUUID(),
             ...newClue,
             isGiven: false,
         })
