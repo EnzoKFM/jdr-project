@@ -1,153 +1,215 @@
 <script setup>
-import { ref } from "vue";
-import { useChapterStore } from "@/stores/chaptersStore";
-import ChapterModal from "./ChapterModal.vue";
-import ChapterDeleteModal from "./ChapterDeleteModal.vue";
-import ChapterStateModal from "./ChapterStateModal.vue";
-import ChapterPasswordModal from "./ChapterPasswordModal.vue";
-import { watchEffect  } from "vue";
+  import { ref, onMounted } from 'vue';
+  import { watchEffect  } from "vue";
 
-const props = defineProps({
-  campaignId: {
-    type: String,
-    required: true,
-  },
-});
+  import { useChapterStore } from "@/stores/chaptersStore";
+  import useQuetesStore from "@/stores/quest";
+  import { useLocationStore } from '@/stores/locationsStore';
+  import ChapterModal from "./ChapterModal.vue";
+  import ChapterDeleteModal from "./ChapterDeleteModal.vue";
+  import ChapterStateModal from "./ChapterStateModal.vue";
+  import ChapterPasswordModal from "./ChapterPasswordModal.vue";
 
-// console.log("campaignId", props.campaignId);
-const chapterStore = useChapterStore();
+  import QuestModal from "../quest/QuestModal.vue";
+  import QuestList from "../quest/QuestList.vue";
 
-watchEffect(() => {
-  if (props.campaignId) {
-    chapterStore.setCampaignId(props.campaignId);
+  const props = defineProps({
+    campaignId: {
+      type: String,
+      required: true,
+    },
+  });
+
+  const chapterStore = useChapterStore();
+  const questStore = useQuetesStore();
+  const locationStore = useLocationStore();
+  locationStore.setCampaignId(props.campaignId);
+
+  onMounted(() => {
+    // initialQuetes = toutes les quêtes de tes chapitres
+    const initialQuetes = chapterStore.listChapters().flatMap(c => c.quests)
+    questStore.initQuetes(initialQuetes)
+  })
+
+  const editingChapter = ref(null);
+  const chapterToDelete = ref(null);
+  const editingQuest = ref(null);
+
+  watchEffect(() => {
+    if (props.campaignId) {
+      chapterStore.setCampaignId(props.campaignId);
+    }
+  });
+
+  const emit = defineEmits(["move-up", "move-down"]);
+  const showModalQuest = ref(false);
+
+  const showModal = ref(false);
+  const showDeleteModal = ref(false);
+  const showStateModal = ref(false);
+  const showPasswordActivateModal = ref(false);
+  const showPasswordResoluteModal = ref(false);
+
+  const openCreateQuestModal = () => {
+      editingQuest.value = null;
+      showModalQuest.value = true;
+  };
+
+  const handleStateEdit = (chapter) => {
+      editingChapter.value = chapter;
+      showStateModal.value = true;
+  };
+
+  const openCreateModal = () => {
+    editingChapter.value = null;
+    showModal.value = true;
+  };
+
+  // Édition
+  const handleEdit = (chapter) => {
+    editingChapter.value = chapter;
+    showModal.value = true;
+  };
+
+  const handlePasswordActivate = (chapter) => {
+    editingChapter.value = chapter;
+    showPasswordActivateModal.value = true;
+  };
+
+  const handlePasswordResolute = (chapter) => {
+    editingChapter.value = chapter;
+    showPasswordResoluteModal.value = true;
+  };
+
+  const handleSaveQuest = (formData) => {
+      if (!formData.chapterId) {
+          alert("Veuillez sélectionner un chapitre !");
+          return;
+      }
+
+      if (editingQuest.value) {
+          // Mettre à jour le store global
+          questStore.modifierQuete(editingQuest.value.id, formData);
+
+          // Persister la mise à jour dans le chapitre correspondant (ou déplacer si besoin)
+          // updateQuestInChapter gère la mise à jour sur place ou le déplacement vers un autre chapitre
+          chapterStore.updateQuestInChapter(formData.chapterId, editingQuest.value.id, { ...editingQuest.value, ...formData });
+      } else {
+          // Création
+          const newQuest = questStore.ajouterQuete(formData);
+
+          // Ajouter la quête au chapitre choisi
+          const chapter = chapterStore.listChapters().find(c => c.id === formData.chapterId);
+          console.log('chapter found for new quest:', chapter);
+          if (chapter) {
+              chapterStore.addQuestToChapter(formData.chapterId, newQuest);
+          }
+      }
+
+      closeModalQuest();
+  };
+
+  const closeModalQuest = () => {
+      showModalQuest.value = false;
+  };
+
+  const handleSave = (formData) => {
+    if (editingChapter.value) {
+      // Mise à jour
+      chapterStore.modifyChapter(editingChapter.value.id, formData);
+    } else {
+      // Création
+      chapterStore.addChapter(formData);
+    }
+    closeModal();
+  };
+
+  // Fermer le modal
+  const closeModal = () => {
+    showModal.value = false;
+  };
+
+  // Suppression - Confirmation
+  const handleDeleteConfirm = (chapter) => {
+    chapterToDelete.value = chapter;
+    showDeleteModal.value = true;
+  };
+
+  // Suppression - Exécution
+  const handleDelete = () => {
+    if (chapterToDelete.value) {
+      chapterStore.deleteChapter(chapterToDelete.value.id);
+      closeDeleteModal();
+    }
+  };
+
+  // Fermer le modal de suppression
+  const closeDeleteModal = () => {
+    showDeleteModal.value = false;
+    chapterToDelete.value = null;
+  };
+
+  // Fermer le modal de modification d'état
+  const closeStateModal = () => {
+    showStateModal.value = false;
+    showPasswordActivateModal.value = false;
+    showPasswordResoluteModal.value = false;
+    editingChapter.value = null;
+  };
+
+  const expandedChapterId = ref(null);
+
+  const toggleRow = (chapterId) => {
+    expandedChapterId.value =
+      expandedChapterId.value === chapterId ? null : chapterId;
+  };
+
+  function modifierEtatchapter(etat) {
+    chapterStore.modifyStateChapter(editingChapter.value.id, etat);
+    closeStateModal();
   }
-});
 
-const emit = defineEmits(["move-up", "move-down"]);
+  const activateChapter = (enteredPassword) => {
+    if (enteredPassword !== editingChapter.value.activationMdp) {
+      alert("Mot de passe incorrect");
+    } else {
+      chapterStore.modifyStateChapter(editingChapter.value.id, "Activé");
+    }
+    closeStateModal();
+  };
 
-const editingChapter = ref(null);
-const chapterToDelete = ref(null);
+  const resoluteChapter = (enteredPassword) => {
+    if (enteredPassword !== editingChapter.value.resolutionMdp) {
+      alert("Mot de passe incorrect");
+    } else {
+      chapterStore.modifyStateChapter(editingChapter.value.id, "Terminé");
+    }
+    closeStateModal();
+  };
 
-const showModal = ref(false);
-const showDeleteModal = ref(false);
-const showStateModal = ref(false);
-const showPasswordActivateModal = ref(false);
-const showPasswordResoluteModal = ref(false);
+  const duplicateChapter = (chapter) => {
+    chapterStore.duplicateChapter(chapter);
+  };
 
-const openCreateModal = () => {
-  editingChapter.value = null;
-  showModal.value = true;
-};
-
-// Édition
-const handleEdit = (chapter) => {
-  editingChapter.value = chapter;
-  showModal.value = true;
-};
-
-const handleStateEdit = (chapter) => {
-  editingChapter.value = chapter;
-  showStateModal.value = true;
-};
-
-const handlePasswordActivate = (chapter) => {
-  editingChapter.value = chapter;
-  showPasswordActivateModal.value = true;
-};
-
-const handlePasswordResolute = (chapter) => {
-  editingChapter.value = chapter;
-  showPasswordResoluteModal.value = true;
-};
-
-const handleSave = (formData) => {
-  if (editingChapter.value) {
-    // Mise à jour
-    chapterStore.modifyChapter(editingChapter.value.id, formData);
-  } else {
-    // Création
-    chapterStore.addChapter(formData);
-  }
-  closeModal();
-};
-
-// Fermer le modal
-const closeModal = () => {
-  showModal.value = false;
-};
-
-// Suppression - Confirmation
-const handleDeleteConfirm = (chapter) => {
-  chapterToDelete.value = chapter;
-  showDeleteModal.value = true;
-};
-
-// Suppression - Exécution
-const handleDelete = () => {
-  if (chapterToDelete.value) {
-    chapterStore.deleteChapter(chapterToDelete.value.id);
-    closeDeleteModal();
-  }
-};
-
-// Fermer le modal de suppression
-const closeDeleteModal = () => {
-  showDeleteModal.value = false;
-  chapterToDelete.value = null;
-};
-
-// Fermer le modal de modification d'état
-const closeStateModal = () => {
-  showStateModal.value = false;
-  showPasswordActivateModal.value = false;
-  showPasswordResoluteModal.value = false;
-  editingChapter.value = null;
-};
-
-const expandedChapterId = ref(null);
-
-const toggleRow = (chapterId) => {
-  expandedChapterId.value =
-    expandedChapterId.value === chapterId ? null : chapterId;
-};
-
-function modifierEtatchapter(etat) {
-  chapterStore.modifyStateChapter(editingChapter.value.id, etat);
-  closeStateModal();
-}
-
-const activateChapter = (enteredPassword) => {
-  if (enteredPassword !== editingChapter.value.activationMdp) {
-    alert("Mot de passe incorrect");
-  } else {
-    chapterStore.modifyStateChapter(editingChapter.value.id, "Activé");
-  }
-  closeStateModal();
-};
-
-const resoluteChapter = (enteredPassword) => {
-  if (enteredPassword !== editingChapter.value.resolutionMdp) {
-    alert("Mot de passe incorrect");
-  } else {
-    chapterStore.modifyStateChapter(editingChapter.value.id, "Terminé");
-  }
-  closeStateModal();
-};
-
-const duplicateChapter = (chapter) => {
-  chapterStore.duplicateChapter(chapter);
-};
+  // Quest handlers
+  const handleEditQuest = (questId) => {
+      const quest = questStore.quetes.find(q => q.id === questId);
+      if (quest) {
+          editingQuest.value = quest;
+          showModalQuest.value = true;
+      }
+  };
 </script>
 
 <template>
   <div class="p-4 flex flex-col gap-y-4">
-    <div class="space-y-2">
+    <div class="flex items-center gap-2">
       <button
-        @click="openCreateModal"
-        class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+          @click="openCreateModal"
+          class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
       >
-        <span class="text-xl">+</span>
-        Nouveau Chapitre
+          <span class="text-xl">+</span>
+          Nouveau Chapitre
       </button>
     </div>
     <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
@@ -272,6 +334,29 @@ const duplicateChapter = (chapter) => {
                 </div>
               </td>
             </tr>
+            <tr v-if="expandedChapterId === chapter.id">
+                      <td colspan="5" class="bg-gray-50 px-6 py-4">
+                          <div class="flex flex-col gap-4">
+                              <div>
+                                  <button
+                                      @click="openCreateQuestModal"
+                                      class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                  >
+                                      <span class="text-xl">+</span>
+                                      Nouvelle Quête
+                                  </button>
+                              </div>
+
+                              <div>
+                                  <QuestList
+                                      :quests="chapter.quests"
+                                      :chapter="chapter"
+                                      :campaignid="props.campaignId"
+                                  />
+                              </div>
+                          </div>
+                      </td>
+                  </tr>
           </template>
         </tbody>
       </table>
@@ -317,5 +402,15 @@ const duplicateChapter = (chapter) => {
     @close="closeStateModal"
     @save="resoluteChapter"
   />
+
+    <!-- Modal création / édition -->
+    <QuestModal
+      :show="showModalQuest"
+      :quest="editingQuest"
+      :chapters="chapterStore.listChapters()"
+      :lieux="locationStore.listLocations()"
+      @save="handleSaveQuest"
+      @close="closeModalQuest"
+    />
 
 </template>

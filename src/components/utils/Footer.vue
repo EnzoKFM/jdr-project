@@ -32,7 +32,7 @@ const campaignStore = useCampaignStore();
         <div class="flex items-center gap-4">
           <span>📚 {{ campaignStore.campaignsCount }} campagne(s)</span>
           <span class="text-gray-400">|</span>
-          <span>Projet JDR - Aboubakr ZENNIR - Enzo K. - Marevan CONTI - Dorian</span>
+          <span>Projet JDR - Aboubakr ZENNIR - Enzo K. - Marevan CONTI - Dorian MARTIN</span>
         </div>
       </div>
     </div>
