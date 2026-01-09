@@ -21,6 +21,8 @@ const campaign = computed(() => {
 
   return null;
 });
+locationStore.setCampaignId(campaignId.value);
+chapterStore.setCampaignId(campaignId.value);
 
 onMounted(() => {
   // initialQuetes = toutes les quêtes de tes chapitres

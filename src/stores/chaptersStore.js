@@ -83,6 +83,7 @@ export const useChapterStore = defineStore("chapters", () => {
     const chapter = chapters.find(
       (c) => c.activationMdp === passwordActivate.value
     );
+    console.log("chapter trouvé : ", chapter);
 
     if (chapter) {
       campaign.value.chapters.find(
