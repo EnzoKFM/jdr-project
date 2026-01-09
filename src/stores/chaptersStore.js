@@ -7,7 +7,12 @@ export const useChapterStore = defineStore('chapters', () => {
     const campaignStore = useCampaignStore()
     const route = useRoute();
 
-    const campaignId = computed(() => route.params.id);
+    const campaignId = ref(null);
+
+    function setCampaignId(id) {
+        campaignId.value = id;
+    }; 
+
     const campaign = computed(() =>
         campaignStore.campaigns.find((c) => c.id === campaignId.value)
     );
@@ -78,5 +83,5 @@ export const useChapterStore = defineStore('chapters', () => {
         campaignStore.updateCampaign(campaignId.value, campaign.value)
     }
 
-    return { listChapters, addChapter, modifyChapter, deleteChapter, modifyStateChapter, duplicateChapter }
+    return { listChapters, addChapter, modifyChapter, deleteChapter, modifyStateChapter, duplicateChapter, setCampaignId }
 })
