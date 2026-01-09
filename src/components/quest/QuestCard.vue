@@ -6,6 +6,14 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  index: {
+    type: Number,
+    required: true,
+  },
+  quests: {
+    type: Array,
+    required: true,
+  },
 });
 
 defineEmits([
@@ -16,6 +24,8 @@ defineEmits([
   "edit",
   "duplicate",
   "delete",
+  "move-up",
+  "move-down",
 ]);
 
 const statusLabel = computed(() => {
@@ -43,7 +53,7 @@ const statusClass = computed(() => {
 <template>
   <div class="bg-white rounded-lg shadow-md border-2 p-6">
     <!-- Header -->
-    <div class="flex justify-between items-start mb-4">
+    <div class="flex justify-between items-start mb-4 text-left">
       <div>
         <h3 class="text-xl font-bold">
           🧭 {{ quest.nom }}
@@ -53,7 +63,10 @@ const statusClass = computed(() => {
           {{ quest.description }}
         </p>
 
-        <p class="text-xs text-gray-500 mt-1">
+        <p
+          v-if="quest.lieu && quest.lieu.length > 0"
+          class="text-xs text-gray-500 mt-1"
+        >
           📍 {{ quest.lieu }}
         </p>
 
@@ -74,22 +87,6 @@ const statusClass = computed(() => {
         class="btn btn-blue"
       >
         ⭐ Activer (MJ)
-      </button>
-
-      <button
-        v-if="quest.etat === 'inactive'"
-        @click="$emit('activer', quest.id)"
-        class="btn btn-green"
-      >
-        ▶️ Activer (Joueur)
-      </button>
-
-      <button
-        v-if="quest.etat === 'active'"
-        @click="$emit('resoudre', quest.id)"
-        class="btn btn-purple"
-      >
-        ✅ Résoudre
       </button>
 
       <button
@@ -114,6 +111,34 @@ const statusClass = computed(() => {
         📋 Dupliquer
       </button>
 
+      <div class="flex flex-col gap-4 mx-2">
+        <button
+          @click="$emit('move-up', quest)"
+          :disabled="index === 0"
+          class="px-4 py-1 rounded-lg font-semibold transition-all"
+          :class="
+            index === 0
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'bg-gradient-to-r from-black to-gray-500 text-white hover:from-gray-600 hover:to-black'
+          "
+        >
+          ⬆️ UP
+        </button>
+
+        <button
+          @click="$emit('move-down', quest)"
+          :disabled="index === quests.length - 1"
+          class="px-4 py-1 rounded-lg font-semibold transition-all"
+          :class="
+            index === quests.length - 1
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'bg-gradient-to-r from-black to-gray-500 text-white hover:from-gray-600 hover:to-black'
+          "
+        >
+          ⬇️ DOWN
+        </button>
+      </div>
+
       <button
         @click="$emit('delete', quest.id)"
         class="btn btn-red ml-auto"
@@ -123,5 +148,11 @@ const statusClass = computed(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+  .text-left {
+    text-align: left;
+  }
+</style>
 
 

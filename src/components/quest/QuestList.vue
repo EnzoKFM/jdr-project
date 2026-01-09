@@ -4,6 +4,7 @@ import QuestCard from "./QuestCard.vue";
 import QuestModal from "./QuestModal.vue";
 import useQuetesStore from "@/stores/quest";
 import { useChapterStore } from '@/stores/chaptersStore';
+import { useLocationStore } from '@/stores/locationsStore';
 
 
 
@@ -15,6 +16,10 @@ const props = defineProps({
   chapter: {
     type: Object,
     required: false
+  },
+  campaignid: {
+    type: String,
+    required: false
   }
 });
 
@@ -24,6 +29,9 @@ const showModalQuest = ref(false);
 
 const questStore = useQuetesStore();
 const chapterStore = useChapterStore()
+chapterStore.setCampaignId(props.campaignid);
+const locationStore = useLocationStore();
+locationStore.setCampaignId(props.campaignid);
 
 const handleEditQuest = (quest) => {
   editingQuest.value = quest;
@@ -45,7 +53,7 @@ const handleDuplicateQuest = (quest) => {
 
 const handleActivateMjQuest = (quest) => {
     // Mettre à jour la quête dans le chapitre
-    const q = chapter.quests.find(q => q.id === quest.id);
+    const q = props.chapter.quests.find(q => q.id === quest.id);
     if (q) q.etat = 'active';
 };
 
@@ -96,6 +104,35 @@ const handleSaveQuest = (formData) => {
         showModalQuest.value = false;
     };
 
+  const handleMoveUpQuest = (quest) => {
+  const chapter = props.chapter; // chapitre courant
+  if (!chapter || !chapter.quests) return;
+
+  const index = chapter.quests.findIndex(q => q.id === quest.id);
+  if (index <= 0) return;
+
+  // swap
+  [chapter.quests[index - 1], chapter.quests[index]] = [
+    chapter.quests[index],
+    chapter.quests[index - 1],
+  ];
+};
+
+const handleMoveDownQuest = (quest) => {
+  const chapter = props.chapter;
+  if (!chapter || !chapter.quests) return;
+
+  const index = chapter.quests.findIndex(q => q.id === quest.id);
+  if (index === -1 || index >= chapter.quests.length - 1) return;
+
+  // swap
+  [chapter.quests[index], chapter.quests[index + 1]] = [
+    chapter.quests[index + 1],
+    chapter.quests[index],
+  ];
+
+};
+
 </script>
 
 <template>
@@ -112,24 +149,27 @@ const handleSaveQuest = (formData) => {
     <!-- Liste -->
     <div v-else class="space-y-4">
       <QuestCard
-        v-for="quest in quests.filter(q => q && q.id)"
+        v-for="(quest, index) in quests"
         :key="quest.id"
         :quest="quest"
+        :index="index"
+        :quests="quests"
         @activerMj="handleActivateMjQuest(quest)"
-        @activer="handleActivateQuest(quest)"
-        @resoudre="handleResolveQuest(quest)"
         @abandonner="handleAbandonQuest(quest)"
         @edit="handleEditQuest(quest)"
         @duplicate="handleDuplicateQuest(quest)"
         @delete="handleDeleteQuest(quest)"
+        @move-up="handleMoveUpQuest"
+        @move-down="handleMoveDownQuest"
       />
 
       <QuestModal
       :show="showModalQuest"
       :quest="editingQuest"
       :chapters="chapterStore.listChapters()"
+      :lieux="locationStore.listLocations()"
       @save="handleSaveQuest"
-      @close="() => showModalQuest.value = false"
+      @close="closeModalQuest"
     />
     </div>
   </div>

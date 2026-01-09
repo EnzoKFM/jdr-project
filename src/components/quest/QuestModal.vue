@@ -5,6 +5,7 @@ const props = defineProps({
   show: Boolean,
   quest: Object,
   chapters: Array,
+  lieux: Array,
 });
 
 const emit = defineEmits(["save", "close"]);
@@ -19,7 +20,7 @@ const form = reactive({
 });
 
 const isEditing = computed(() => props.quest !== null);
-
+console.log(props.lieux);
 // pré-remplissage édition
 watch(
   () => props.quest,
@@ -95,17 +96,17 @@ const handleSubmit = () => {
             <label class="block text-sm font-semibold text-gray-700 mb-2">
               📍 Lieu
             </label>
-            <input
-              v-model="form.lieu"
-              type="text"
-              class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
-              placeholder="Ex: Forêt Noire"
-            />
-            <p class="text-xs text-gray-500 mt-1">
-              (sera remplacé plus tard par une sélection)
-            </p>
+            <select
+                v-model="form.lieu"
+                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+            >
+                <option value="" disabled>-- Sélectionner un lieu --</option>
+                <option v-for="lieu in props.lieux" :key="lieu.id" :value="lieu.name">
+                {{ lieu.name }}
+                </option>
+            </select>
           </div>
-
+    
           <!-- Mot de passe activation -->
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">

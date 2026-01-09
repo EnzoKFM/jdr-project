@@ -3,6 +3,8 @@
   import { watchEffect  } from "vue";
 
   import { useChapterStore } from "@/stores/chaptersStore";
+  import useQuetesStore from "@/stores/quest";
+  import { useLocationStore } from '@/stores/locationsStore';
   import ChapterModal from "./ChapterModal.vue";
   import ChapterDeleteModal from "./ChapterDeleteModal.vue";
   import ChapterStateModal from "./ChapterStateModal.vue";
@@ -20,6 +22,8 @@
 
   const chapterStore = useChapterStore();
   const questStore = useQuetesStore();
+  const locationStore = useLocationStore();
+  locationStore.setCampaignId(props.campaignId);
 
   onMounted(() => {
     // initialQuetes = toutes les quêtes de tes chapitres
@@ -210,128 +214,6 @@
     </div>
     <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
       <table class="w-full border-collapse bg-white text-sm text-gray-700">
-          
-          <thead class="bg-gray-100 text-xs uppercase tracking-wide text-gray-600">
-          <tr>
-              <th class="px-6 py-3 text-left font-semibold">Nom</th>
-              <th class="px-6 py-3 text-left font-semibold">État</th>
-              <th class="px-6 py-3 text-left font-semibold">Description</th>
-              <th class="px-6 py-3 text-left font-semibold">Commentaire</th>
-              <th class="px-6 py-3 text-left font-semibold">Actions</th>
-          </tr>
-          </thead>
-
-          <tbody class="divide-y divide-gray-200">
-              <template
-                  v-for="chapter in chapterStore.listChapters()"
-                  :key="chapter.id"
-              >
-                  <!-- Ligne principale -->
-                  <tr class="hover:bg-gray-50 transition-colors">
-                      <td
-                          class="px-6 py-4 font-medium text-gray-900"
-                      >
-                          {{ chapter.name }}
-                      </td>
-
-                      <td class="px-6 py-4">
-                          <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-800">
-                          {{ chapter.state }}
-                          </span>
-                      </td>
-
-                      <td class="px-6 py-4 text-gray-600">
-                          {{ chapter.description }}
-                      </td>
-
-                      <td class="px-6 py-4 text-gray-600">
-                          {{ chapter.mjComment }}
-                      </td>
-
-                      <td class="flex gap-6 py-4 justify-center">
-
-                          <button
-                              @click="handleEdit(chapter)"
-                              class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
-                          >
-                              ✏️ Modifier
-                          </button>
-                          <button
-                              @click="handleDeleteConfirm(chapter)"
-                              class="bg-gradient-to-r from-rose-500 to-red-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-rose-600 hover:to-red-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
-                          >
-                              🗑️ Supprimer
-                          </button>
-                          <button
-                              @click="duplicateChapter(chapter)"
-                              class="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-amber-600 hover:to-yellow-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
-                          >
-                              📚 Dupliquer
-                          </button>
-                          <button
-                              @click.stop="toggleRow(chapter.id)"
-                              class="bg-gradient-to-r from-neutral-500 to-stone-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-neutral-600 hover:to-stone-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
-                          >
-                              V
-                          </button>
-                      </td>
-                  </tr>
-
-                  <!-- Ligne dropdown -->
-                  <tr v-if="expandedChapterId === chapter.id">
-                      <td colspan="5" class="bg-gray-50 px-6 py-4">
-                          <div class="flex gap-4">
-                              <button
-                                  @click="handleStateEdit(chapter)"
-                                  class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
-                              >
-                                  ♾️ Modifier l'état
-                              </button>
-                              <button
-                                  @click="handlePasswordActivate(chapter)"
-                                  class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
-                                  v-show="chapter.state === 'Inactif'"
-                              >
-                                  ✔️ Activer
-                              </button>
-                              <button
-                                  @click="handlePasswordResolute(chapter)"
-                                  class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
-                                  v-show="chapter.state === 'Activé'"
-                              >
-                                  ✔️ Terminer
-                              </button>
-                          </div>
-                      </td>
-                  </tr>
-                  <tr v-if="expandedChapterId === chapter.id">
-                      <td colspan="5" class="bg-gray-50 px-6 py-4">
-                          <div class="flex flex-col gap-4">
-                              <div>
-                                  <button
-                                      @click="openCreateQuestModal"
-                                      class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
-                                  >
-                                      <span class="text-xl">+</span>
-                                      Nouvelle Quête
-                                  </button>
-                              </div>
-
-                              <div>
-                                  <QuestList
-                                      :quests="chapter.quests"
-                                      :chapter="chapter"
-                                  />
-                              </div>
-                          </div>
-                      </td>
-                  </tr>
-              </template>
-          </tbody>
-      </table>
-    </div>
-    <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
-      <table class="w-full border-collapse bg-white text-sm text-gray-700">
         <thead
           class="bg-gray-100 text-xs uppercase tracking-wide text-gray-600"
         >
@@ -452,6 +334,29 @@
                 </div>
               </td>
             </tr>
+            <tr v-if="expandedChapterId === chapter.id">
+                      <td colspan="5" class="bg-gray-50 px-6 py-4">
+                          <div class="flex flex-col gap-4">
+                              <div>
+                                  <button
+                                      @click="openCreateQuestModal"
+                                      class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                  >
+                                      <span class="text-xl">+</span>
+                                      Nouvelle Quête
+                                  </button>
+                              </div>
+
+                              <div>
+                                  <QuestList
+                                      :quests="chapter.quests"
+                                      :chapter="chapter"
+                                      :campaignid="props.campaignId"
+                                  />
+                              </div>
+                          </div>
+                      </td>
+                  </tr>
           </template>
         </tbody>
       </table>
@@ -503,6 +408,7 @@
       :show="showModalQuest"
       :quest="editingQuest"
       :chapters="chapterStore.listChapters()"
+      :lieux="locationStore.listLocations()"
       @save="handleSaveQuest"
       @close="closeModalQuest"
     />
