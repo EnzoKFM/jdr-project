@@ -238,7 +238,7 @@ const handleMoveDown = (chapter) => {
             <h2 class="text-xl font-bold mb-4">👥 Gestion des Joueurs</h2>
 
             <PlayersSection
-                :campaign="campaign"
+                :campaign-id="campaignId"
                 @update="campaignStore.updateCampaign(campaign.id, $event)"
             />
         </div>

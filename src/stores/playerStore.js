@@ -1,15 +1,17 @@
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { useCampaignStore } from './campaignStore'
-import { useRoute } from 'vue-router'
 
 export const usePlayerStore = defineStore('players', () => {
     const campaignStore = useCampaignStore()
-    const route = useRoute()
+    const campaignId = ref(null)
 
-    const campaignId = computed(() => route.params.id)
+    function setCampaignId(id) {
+        campaignId.value = id
+    }; 
+
     const campaign = computed(() =>
-        campaignStore.campaigns.find(c => c.id === campaignId.value)
+        campaignStore.campaigns.find((c) => c.id === campaignId.value)
     )
 
     function listPlayers() {
@@ -80,6 +82,7 @@ export const usePlayerStore = defineStore('players', () => {
     }
 
     return {
+        setCampaignId,
         listPlayers,
         addPlayer,
         updatePlayer,

@@ -4,12 +4,22 @@
     import PlayerList from "./PlayerList.vue";
     import PlayerModal from "./PlayerModal.vue";
     import PlayerDeleteModal from "./PlayerDeleteModal.vue";
+    import { watchEffect  } from "vue";
 
     const props = defineProps({
-        campaign: { type: Object, required: true },
+        campaignId: {
+            type: String,
+            required: true,
+        },
     });
 
     const playerStore = usePlayerStore();
+
+    watchEffect(() => {
+        if (props.campaignId) {
+            playerStore.setCampaignId(props.campaignId);
+        }
+    });
 
     const showModal = ref(false);
     const showDeleteModal = ref(false);
@@ -64,7 +74,7 @@
             </button>
         </div>
 
-        <PlayerList :players="campaign.players" @edit="handleEdit" @delete="handleDeleteClick" @duplicate="handleDuplicate" />
+        <PlayerList :players="playerStore.listPlayers()" @edit="handleEdit" @delete="handleDeleteClick" @duplicate="handleDuplicate" />
 
         <PlayerModal :show="showModal" :player="editedPlayer" @close="() => { showModal = false; editedPlayer = null }" @save="handleSave" />
 

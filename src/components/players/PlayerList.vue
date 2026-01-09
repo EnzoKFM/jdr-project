@@ -78,7 +78,7 @@
 				</tr>
 
 				<tr v-if="players.length === 0">
-					<td colspan="4" class="px-4 py-6 text-center text-slate-400">
+					<td colspan="5" class="px-4 py-6 text-center text-slate-400">
 						Aucun joueur pour le moment
 					</td>
 				</tr>
