@@ -1,5 +1,6 @@
 <script setup>
     import { ref } from "vue";
+    import { usePlayerStore } from "@/stores/playerStore";
     import PlayerList from "./PlayerList.vue";
     import PlayerModal from "./PlayerModal.vue";
     import PlayerDeleteModal from "./PlayerDeleteModal.vue";
@@ -8,28 +9,12 @@
         campaign: { type: Object, required: true },
     });
 
-    const emit = defineEmits(["update"]);
+    const playerStore = usePlayerStore();
 
     const showModal = ref(false);
     const showDeleteModal = ref(false);
     const editedPlayer = ref(null);
     const playerToDelete = ref(null);
-
-    function handleAdd(playerData) {
-        emit("update", {
-            players: [
-                ...props.campaign.players,
-                {
-                    id: crypto.randomUUID(),
-                    ...playerData,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                },
-            ],
-        });
-
-        showModal.value = false;
-    }
 
     const handleDeleteClick = (player) => {
         playerToDelete.value = player;
@@ -39,13 +24,8 @@
     function handleDelete() {
         if (!playerToDelete.value) return;
 
-        const updatedPlayers = props.campaign.players.filter(
-            p => p.id !== playerToDelete.value.id
-        );
+        playerStore.deletePlayer(playerToDelete.value.id);
 
-        emit('update', { players: updatedPlayers });
-
-        // Reset
         showDeleteModal.value = false;
         playerToDelete.value = null;
     }
@@ -57,23 +37,18 @@
 
     function handleSave(playerData) {
         if (editedPlayer.value) {
-            const updatedPlayers = props.campaign.players.map(p =>
-            p.id === editedPlayer.value.id
-                ? { ...p, ...playerData, updatedAt: new Date().toISOString() }
-                : p
-            );
-
-            emit("update", { players: updatedPlayers });
+            playerStore.updatePlayer(editedPlayer.value.id, playerData);
         } else {
-            handleAdd(playerData);
-            return;
+            playerStore.addPlayer(playerData);
         }
 
         editedPlayer.value = null;
         showModal.value = false;
     }
 
-
+    function handleDuplicate(player) {
+        playerStore.duplicatePlayer(player);
+    }
 </script>
 
 <template>
@@ -89,7 +64,7 @@
             </button>
         </div>
 
-        <PlayerList :players="campaign.players" @edit="handleEdit" @delete="handleDeleteClick" />
+        <PlayerList :players="campaign.players" @edit="handleEdit" @delete="handleDeleteClick" @duplicate="handleDuplicate" />
 
         <PlayerModal :show="showModal" :player="editedPlayer" @close="() => { showModal = false; editedPlayer = null }" @save="handleSave" />
 

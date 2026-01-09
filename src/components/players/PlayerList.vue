@@ -3,7 +3,7 @@
 		players: { type: Array, required: true },
 	});
 
-	const emit = defineEmits(["edit", "delete"]);
+	const emit = defineEmits(["edit", "delete", "duplicate"]);
 </script>
 
 <template>
@@ -56,16 +56,23 @@
 
 					<td class="px-4 py-3 text-right flex justify-end gap-2">
 						<button
+							@click="emit('duplicate', p)"
+							class="px-2 py-1 rounded-md bg-slate-700/60 text-slate-300 hover:bg-slate-600 hover:text-white transition text-xs"
+							title="Dupliquer"
+						>
+							⧉
+						</button>
+						<button
 							@click="emit('edit', p)"
 							class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full hover:bg-indigo-500 transition"
 						>
-							Modifier
+							✎
 						</button>
 						<button
 							@click="emit('delete', p)"
 							class="bg-red-600 text-white text-xs px-3 py-1 rounded-full hover:bg-red-500 transition"
 						>
-							Supprimer
+							🗑
 						</button>
 					</td>
 				</tr>
