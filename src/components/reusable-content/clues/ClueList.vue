@@ -72,7 +72,7 @@
     }
 
     const giveClueToAll = (clue) => {
-        clueStore.giveClue(clue)
+        clueStore.giveClue(clue.id)
     }
 </script>
 
@@ -103,7 +103,7 @@
                     <tr 
                         class="hover:bg-gray-50 transition-colors"
                         v-for="clue in clueStore.listClues()"
-                        :key="item.id"
+                        :key="clue.id"
                     >
                         <td
                             class="px-6 py-4 font-medium text-gray-900"
