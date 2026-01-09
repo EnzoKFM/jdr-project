@@ -2,9 +2,15 @@
 import Header from "@/components/utils/Header.vue";
 import Footer from "@/components/utils/Footer.vue";
 import { useCampaignStore } from "@/stores/campaignStore";
-import { computed, ref } from "vue";
+import { useLocationStore } from "@/stores/locationsStore";
+import { useChapterStore } from "@/stores/chaptersStore";
+import { computed, ref, onMounted } from "vue";
+import useQuetesStore from "@/stores/quest";
 
 const campaignStore = useCampaignStore();
+const locationStore = useLocationStore();
+const chapterStore = useChapterStore();
+const questStore = useQuetesStore();
 
 // Récupérer la campagne
 const campaignId = computed(() => campaignStore.activeCampaignId);
@@ -15,6 +21,15 @@ const campaign = computed(() => {
 
   return null;
 });
+
+onMounted(() => {
+  // initialQuetes = toutes les quêtes de tes chapitres
+  const initialQuetes = chapterStore.listChapters().flatMap(c => c.quests)
+  questStore.initQuetes(initialQuetes)
+})
+
+locationStore.setCampaignId(campaignId.value);
+chapterStore.setCampaignId(campaignId.value);
 
 const selectedPlayerId = ref("");
 const searchQuery = ref("");
@@ -28,7 +43,7 @@ const questPassword = ref("");
 // Joueur sélectionné
 const selectedPlayer = computed(() => {
   if (!campaign.value || !selectedPlayerId.value) return null;
-  return campaign.value.players?.find((p) => p.id === selectedPlayerId.value);
+  return campaign.value.players?.find(({ id }) => id == selectedPlayerId.value);
 });
 
 // Nombre de chapitres
@@ -147,8 +162,9 @@ const getQuestStatusLabel = (state) => {
 };
 
 const availableLocations = computed(() => {
-  // Récupérer les lieux depuis les contenus de la campagne
-  return ["Taverne du Dragon", "Forêt Maudite", "Temple Ancien"];
+  const locations = locationStore.listLocations();
+  return locations;
+  // return ["Taverne du Dragon", "Forêt Maudite", "Temple Ancien"];
 });
 
 const handleMove = () => {
@@ -156,16 +172,63 @@ const handleMove = () => {
 };
 
 const handleActivateChapter = () => {
-  alert("TODO : Activation du chapitre");
+  const isActivated = chapterStore.activeChapter(activateChapterPassword);
+
+  if (isActivated) {
+    alert("Un nouveau chapitre à été activé !");
+  } else {
+    alert("Mot de passe incorrect");
+  }
 };
 
 const handleCompleteChapter = () => {
-  alert("TODO : Complétion du chapitre");
+
+  const isCompleted = chapterStore.completeChapter(
+    completeChapterPassword.value
+  );
+
+  if (isCompleted) {
+    alert("Un nouveau chapitre à été compléter !");
+  } else {
+    alert("Mot de passe incorrect");
+  }
+
+  // alert("TODO : Complétion du chapitre");
 };
 
 const handleQuestAction = () => {
-  alert(`TODO : ${questAction.value} de la quête`);
+  if(questAction.value == "activate"){
+    const isActivated = questStore.activerQuete(questPassword.value)
+
+    if (isActivated) {
+      alert("Une nouvelle quête à été activée !");
+    } else {
+      alert("Mot de passe incorrect");
+    }
+  } else {
+    const isCompleted = questStore.resoudreQuete(questPassword.value)
+
+    if (isCompleted) {
+      alert("Une nouvelle quête à été complétée !");
+    } else {
+      alert("Mot de passe incorrect");
+    }
+  }
 };
+
+const handleAvailableItemsForPlayer = computed(() => {
+  const tab = [];
+  if (selectedPlayer) {
+    campaign.value.items.forEach((item) => {
+      if (item.playerId === selectedPlayer?.value?.id) {
+        if (item.id === selectedPlayer.value.inventory.includes(item.id)) {
+          tab.push(item);
+        }
+      }
+    });
+  }
+  return tab;
+});
 </script>
 
 <template>
@@ -203,126 +266,130 @@ const handleQuestAction = () => {
 
         <!-- 2 colonnes ( on afiche dans la premiere les chapitres et dans le dexieme les joueurs) -->
         <div class="grid lg:grid-cols-3 gap-6">
-          <!-- COLONNE GAUCHE -->
           <div class="lg:col-span-2 space-y-6">
-            <div class="bg-white rounded-lg shadow-lg p-6">
-              <div class="flex justify-between items-center mb-4">
-                <h3
-                  class="text-xl font-bold text-gray-800 flex items-center gap-2"
-                >
-                  <span class="text-2xl">📊</span>
-                  Chapitres/Quêtes
-                </h3>
-                <div class="flex gap-2">
-                  <select
-                    v-model="statusFilter"
-                    class="border-2 border-gray-300 rounded-lg px-3 py-2 text-sm"
+            <!-- COLONNE chapitres/quetes -->
+            <div class="lg:col-span-2 space-y-6">
+              <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex justify-between items-center mb-4">
+                  <h3
+                    class="text-xl font-bold text-gray-800 flex items-center gap-2"
                   >
-                    <option value="all">Tous les statuts</option>
-                    <option value="Activé">🟢 Activé</option>
-                    <option value="Terminé">✅ Terminé</option>
-                    <option value="Inactif">⚪ Inactif</option>
-                    <option value="abandoned">❌ Abandonnée</option>
-                  </select>
+                    <span class="text-2xl">📊</span>
+                    Chapitres/Quêtes
+                  </h3>
+                  <div class="flex gap-2">
+                    <select
+                      v-model="statusFilter"
+                      class="border-2 border-gray-300 rounded-lg px-3 py-2 text-sm"
+                    >
+                      <option value="all">Tous les statuts</option>
+                      <option value="Activé">🟢 Activé</option>
+                      <option value="Terminé">✅ Terminé</option>
+                      <option value="Inactif">⚪ Inactif</option>
+                      <option value="abandoned">❌ Abandonnée</option>
+                    </select>
+                  </div>
                 </div>
-              </div>
 
-              <!-- Recherche -->
-              <div class="mb-4">
-                <input
-                  v-model="searchQuery"
-                  type="text"
-                  placeholder="🔍 Rechercher un chapitre ou une quête..."
-                  class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                />
-              </div>
+                <!-- Recherche -->
+                <div class="mb-4">
+                  <input
+                    v-model="searchQuery"
+                    type="text"
+                    placeholder="🔍 Rechercher un chapitre ou une quête..."
+                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                  />
+                </div>
 
-              <!-- Liste des chapitres/quêtes filtrés -->
-              <div v-if="filteredChapters.length > 0" class="space-y-4">
-                <div
-                  v-for="chapter in filteredChapters"
-                  :key="chapter.id"
-                  class="border-2 rounded-lg p-4"
-                  :class="getChapterBorderClass(chapter.state)"
-                >
-                  <div class="flex justify-between items-start mb-2">
-                    <div class="flex-1">
-                      <div class="flex items-center gap-2 mb-1">
-                        <span class="text-xl">{{
-                          getChapterIcon(chapter.state)
-                        }}</span>
-                        <h4 class="font-bold text-gray-800">
-                          {{ chapter.name }}
-                        </h4>
-                        <span
-                          class="px-2 py-1 text-xs font-bold rounded-full"
-                          :class="getChapterBadgeClass(chapter.state)"
-                        >
-                          {{ getChapterStatusLabel(chapter.state) }}
-                        </span>
-                      </div>
-                      <p class="text-sm text-gray-600 mb-2">
-                        {{ chapter.description }}
-                      </p>
+                <!-- Liste des chapitres/quêtes filtrés -->
+                <div v-if="filteredChapters.length > 0" class="space-y-4">
+                  <div
+                    v-for="chapter in filteredChapters"
+                    :key="chapter.id"
+                    class="border-2 rounded-lg p-4"
+                    :class="getChapterBorderClass(chapter.state)"
+                  >
+                    <div class="flex justify-between items-start mb-2">
+                      <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-1">
+                          <span class="text-xl">{{
+                            getChapterIcon(chapter.state)
+                          }}</span>
+                          <h4 class="font-bold text-gray-800">
+                            {{ chapter.name }}
+                          </h4>
+                          <span
+                            class="px-2 py-1 text-xs font-bold rounded-full"
+                            :class="getChapterBadgeClass(chapter.state)"
+                          >
+                            {{ getChapterStatusLabel(chapter.state) }}
+                          </span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">
+                          {{ chapter.description }}
+                        </p>
 
-                      <!-- Quêtes du chapitre si actif -->
-                      <div
-                        v-if="chapter.quests && chapter.quests.length > 0"
-                        class="space-y-2 ml-6 mt-3"
-                      >
+                        <!-- Quêtes du chapitre si actif -->
                         <div
-                          v-for="quest in chapter.quests"
-                          :key="quest.id"
-                          class="bg-white border-l-4 p-3 rounded"
-                          :class="getQuestBorderClass(quest.state)"
+                          v-if="chapter.quests && chapter.quests.length > 0"
+                          class="space-y-2 ml-6 mt-3"
                         >
-                          <div class="flex justify-between items-center">
-                            <div class="flex-1">
-                              <div class="flex items-center gap-2 mb-1">
-                                <span class="text-lg">🎯</span>
-                                <span class="font-semibold text-sm">{{
-                                  quest.name
-                                }}</span>
-                                <span
-                                  class="px-2 py-0.5 text-xs font-bold rounded"
-                                  :class="getQuestBadgeClass(quest.state)"
-                                >
-                                  {{ getQuestStatusLabel(quest.state) }}
-                                </span>
-                              </div>
-                              <p class="text-xs text-gray-600 mb-1">
-                                {{ quest.description }}
-                              </p>
-                              <div class="flex gap-2 text-xs text-gray-500">
-                                <span v-if="quest.location"
-                                  >📍 {{ quest.location }}</span
-                                >
-                                <span v-if="quest.reward"
-                                  >🎁 {{ quest.reward }}</span
-                                >
+                          <div
+                            v-for="quest in chapter.quests"
+                            :key="quest.id"
+                            class="bg-white border-l-4 p-3 rounded"
+                            :class="getQuestBorderClass(quest.etat)"
+                          >
+                            <div class="flex justify-between items-center">
+                              <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                  <span class="text-lg">🎯</span>
+                                  <span class="font-semibold text-sm">{{
+                                    quest.nom
+                                  }}</span>
+                                  <span
+                                    class="px-2 py-0.5 text-xs font-bold rounded"
+                                    :class="getQuestBadgeClass(quest.etat)"
+                                  >
+                                    {{ getQuestStatusLabel(quest.etat) }}
+                                  </span>
+                                </div>
+                                <p class="text-xs text-gray-600 mb-1">
+                                  {{ quest.description }}
+                                </p>
+                                <div class="flex gap-2 text-xs text-gray-500">
+                                  <span v-if="quest.lieu"
+                                    >📍 {{ quest.lieu }}</span
+                                  >
+                                  <span v-if="quest.recompenses.length != 0"
+                                    >🎁 {{ quest.recompenses }}</span
+                                  >
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div v-else class="mt-2">non</div>
+                        <div v-else class="mt-2">non</div>
 
-                      <div class="flex gap-3 text-xs text-gray-500 mt-3">
-                        <span>🎯 {{ chapter.quests?.length || 0 }} quêtes</span>
-                        <span v-if="chapter.reward"
-                          >🎁 {{ chapter.reward }}</span
-                        >
+                        <div class="flex gap-3 text-xs text-gray-500 mt-3">
+                          <span
+                            >🎯 {{ chapter.quests?.length || 0 }} quêtes</span
+                          >
+                          <span v-if="chapter.reward"
+                            >🎁 {{ chapter.reward }}</span
+                          >
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <!-- Aucun résultat -->
-              <div v-else class="text-center py-8 text-gray-500">
-                <div class="text-4xl mb-2">🔍</div>
-                <p>Aucun chapitre ou quête trouvé</p>
+                <!-- Aucun résultat -->
+                <div v-else class="text-center py-8 text-gray-500">
+                  <div class="text-4xl mb-2">🔍</div>
+                  <p>Aucun chapitre ou quête trouvé</p>
+                </div>
               </div>
             </div>
           </div>
@@ -375,10 +442,10 @@ const handleQuestAction = () => {
                   <option value="">Choisir un lieu</option>
                   <option
                     v-for="location in availableLocations"
-                    :key="location"
-                    :value="location"
+                    :key="location.id"
+                    :value="location.id"
                   >
-                    {{ location }}
+                    {{ location.name }}
                   </option>
                 </select>
                 <button
@@ -469,6 +536,114 @@ const handleQuestAction = () => {
                   emplacement
                 </p>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLONNE objects -->
+        <div class="lg:col-span-2 space-y-6">
+          <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex justify-between items-center mb-4">
+              <h3
+                class="text-xl font-bold text-gray-800 flex items-center gap-2"
+              >
+                <span class="text-2xl">📑</span>
+                <!-- Objets -->
+                {{ handleAvailableItemsForPlayer}}
+              </h3>
+            </div>
+
+            <!-- Liste des chapitres/quêtes filtrés -->
+            <div
+              v-if="handleAvailableItemsForPlayer.length > 0"
+              class="space-y-4"
+            >
+              <div
+                v-for="item in handleAvailableItemsForPlayer"
+                :key="item.id"
+                class="border-2 rounded-lg p-4"
+                :class="getChapterBorderClass(item.state)"
+              >
+                <div class="flex justify-between items-start mb-2">
+                  <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="text-xl">{{
+                        getChapterIcon(item.state)
+                      }}</span>
+                      <h4 class="font-bold text-gray-800">
+                        {{ item.name }}
+                      </h4>
+                      <span
+                        class="px-2 py-1 text-xs font-bold rounded-full"
+                        :class="getChapterBadgeClass(item.state)"
+                      >
+                        {{ getChapterStatusLabel(item.state) }}
+                      </span>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-2">
+                      {{ item.description }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Aucun résultat -->
+            <div v-else class="text-center py-8 text-gray-500">
+              <div class="text-4xl mb-2">🔍</div>
+              <p>Aucun object trouvé</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLONNE indices -->
+        <div class="lg:col-span-2 space-y-6">
+          <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex justify-between items-center mb-4">
+              <h3
+                class="text-xl font-bold text-gray-800 flex items-center gap-2"
+              >
+                <span class="text-2xl">📑</span>
+                Indices
+              </h3>
+            </div>
+
+            <!-- Liste des chapitres/quêtes filtrés -->
+            <div v-if="campaign.clues.length > 0" class="space-y-4">
+              <div
+                v-for="item in campaign.clues"
+                :key="item.id"
+                class="border-2 rounded-lg p-4"
+                :class="getChapterBorderClass(item.state)"
+              >
+                <div class="flex justify-between items-start mb-2">
+                  <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="text-xl">{{
+                        getChapterIcon(item.state)
+                      }}</span>
+                      <h4 class="font-bold text-gray-800">
+                        {{ item.name }}
+                      </h4>
+                      <span
+                        class="px-2 py-1 text-xs font-bold rounded-full"
+                        :class="getChapterBadgeClass(item.state)"
+                      >
+                        {{ getChapterStatusLabel(item.state) }}
+                      </span>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-2">
+                      {{ item.description }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Aucun résultat -->
+            <div v-else class="text-center py-8 text-gray-500">
+              <div class="text-4xl mb-2">🔍</div>
+              <p>Aucun indice trouvé</p>
             </div>
           </div>
         </div>

@@ -54,7 +54,6 @@ const useQuetesStore = defineStore('quetes', () => {
   }
 
   function activateMjQuest(id) {
-
     const quete = quetes.value.find(q => q.id === id);
     if (!quete) return false;
 
@@ -62,27 +61,28 @@ const useQuetesStore = defineStore('quetes', () => {
     return true;
   }
 
-  function activerQuete(id, motDePasse) {
-    console.log("Activation de la quête avec l'ID :", id);
-    const quete = quetes.value.find(q => q.id === id);
-    if (!quete) return false;
+  function activerQuete(passwordActivate) {
+      const quete = quetes.value.find(
+        (c) => c.motDePasseActivation === passwordActivate
+      );
 
-    if (quete.motDePasseActivation && quete.motDePasseActivation !== motDePasse) {
+      if (quete) {
+        quete.etat = "Actif";
+        return true;
+      }
+
       return false;
+  }
+
+  function resoudreQuete(passwordComplete) {
+    const quete = quetes.value.find((c) => c.motDePasseResolution === passwordComplete);
+
+    if (quete) {
+      quete.etat = "Terminé";
+      return true;
     }
 
-    quete.etat = 'active';
-    return true;
-  }
-
-  function resoudreQuete(id, motDePasse) {
-    const quete = quetes.value.find(q => q.id === id);
-    if (!quete) return false;
-
-    if (quete.motDePasseResolution !== motDePasse) return false;
-
-    quete.etat = 'terminee';
-    return quete.recompenses;
+    return false;
   }
 
   function abandonnerQuete(id) {
@@ -114,10 +114,12 @@ const useQuetesStore = defineStore('quetes', () => {
     quetes,
     initQuetes,
     ajouterQuete,
-    activerQuete, activateMjQuest,
+    activerQuete, 
+    activateMjQuest,
     resoudreQuete,
     abandonnerQuete,
-    queteSpecifique, modifierQuete, supprimerQuete, dupliquerQuete
+    modifierQuete, supprimerQuete, dupliquerQuete,
+    queteSpecifique
   };
 });
 

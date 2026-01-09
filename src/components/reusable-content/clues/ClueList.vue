@@ -97,7 +97,7 @@
                 <thead class="bg-gray-100 text-xs uppercase tracking-wide text-gray-600">
                 <tr>
                     <th class="px-6 py-3 text-left font-semibold">Nom</th>
-                    <th class="px-6 py-3 text-left font-semibold">Texte</th>
+                    <th class="px-6 py-3 text-left font-semibold">Description</th>
                     <th class="px-6 py-3 text-left font-semibold">Commentaire</th>
                     <th class="px-6 py-3 text-left font-semibold">Actions</th>
                 </tr>
@@ -116,7 +116,7 @@
                         </td>
 
                         <td class="px-6 py-4 text-gray-600">
-                            {{ clue.text }}
+                            {{ clue.description }}
                         </td>
 
                         <td class="px-6 py-4 text-gray-600">

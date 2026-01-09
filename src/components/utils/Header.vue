@@ -57,7 +57,7 @@ const toggleMode = () => {
         <!-- Bouton de switch de mode -->
         <button
           @click="toggleMode"
-          class="flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl"
+          class="flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl cursor-pointer"
           :class="buttonClass"
         >
           <span class="text-xl">{{ targetModeIcon }}</span>

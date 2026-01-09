@@ -109,9 +109,9 @@ const handleImport = (jsonData) => {
       </h2>
       <button
         @click="openCreateModal"
-        class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+        class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 cursor-pointer"
       >
-        <span class="text-xl">+</span>
+        <span class="text-xl ">+</span>
         Nouvelle Campagne
       </button>
     </div>

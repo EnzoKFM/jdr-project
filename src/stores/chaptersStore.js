@@ -1,33 +1,115 @@
-import { ref, computed } from 'vue'
-import { defineStore } from 'pinia'
-import { useCampaignStore } from './campaignStore'
-import { useRoute } from 'vue-router'
+import { ref, computed } from "vue";
+import { defineStore } from "pinia";
+import { useCampaignStore } from "./campaignStore";
+import { useRoute } from "vue-router";
 
-export const useChapterStore = defineStore('chapters', () => {
-    const campaignStore = useCampaignStore()
-    const route = useRoute();
+export const useChapterStore = defineStore("chapters", () => {
+  const campaignStore = useCampaignStore();
+  const route = useRoute();
 
-    const campaignId = ref(null);
+  const campaignId = ref(null);
 
-    function setCampaignId(id) {
-        campaignId.value = id;
-    }; 
+  function setCampaignId(id) {
+    campaignId.value = id;
+  }
 
-    const campaign = computed(() =>
-        campaignStore.campaigns.find((c) => c.id === campaignId.value)
+  const campaign = computed(() =>
+    campaignStore.campaigns.find((c) => c.id === campaignId.value)
+  );
+
+  function _findChapter(chapterId) {
+    return campaign.value.chapters.find(({ id }) => id === chapterId);
+  }
+
+  function _findIndexChapter(chapterId) {
+    return campaign.value.chapters.findIndex(({ id }) => id === chapterId);
+  }
+
+  function listChapters() {
+    return campaign.value.chapters;
+  }
+
+  function addChapter(newChapter) {
+    campaign.value.chapters.push({
+      id: crypto.randomUUID(),
+      ...newChapter,
+      state: "Inactif",
+      quests: [],
+    });
+    campaignStore.updateCampaign(campaignId.value, campaign.value);
+  }
+
+  function duplicateChapter(chapterModel) {
+    const { id, state, quests, ...chapterData } = chapterModel;
+
+    campaign.value.chapters.push({
+      id: crypto.randomUUID(),
+      ...chapterData,
+      state: "Inactif",
+      quests: [], // TEMPORAIRE
+    });
+    campaignStore.updateCampaign(campaignId.value, campaign.value);
+  }
+
+  function modifyChapter(chapterId, chapterModifiee) {
+    const chapter = _findChapter(chapterId);
+
+    chapter.name = chapterModifiee.name;
+    chapter.description = chapterModifiee.description;
+    chapter.mjComment = chapterModifiee.mjComment;
+    chapter.activationMdp = chapterModifiee.activationMdp;
+    chapter.resolutionMdp = chapterModifiee.resolutionMdp;
+
+    campaignStore.updateCampaign(campaignId.value, campaign.value);
+  }
+
+  function deleteChapter(chapterId) {
+    const index = _findIndexChapter(chapterId);
+
+    campaign.value.chapters.splice(index, 1);
+    campaignStore.updateCampaign(campaignId.value, campaign.value);
+  }
+
+  function modifyStateChapter(chapterId, state) {
+    const chapter = _findChapter(chapterId);
+
+    chapter.state = state;
+    campaignStore.updateCampaign(campaignId.value, campaign.value);
+  }
+
+  function activeChapter(passwordActivate) {
+    const chapters = [...campaign.value.chapters];
+
+    const chapter = chapters.find(
+      (c) => c.activationMdp === passwordActivate.value
     );
 
-    function _findChapter(chapterId) {
-        return campaign.value.chapters.find(({ id }) => (id === chapterId));
+    if (chapter) {
+      campaign.value.chapters.find(
+        (c) => c.activationMdp === passwordActivate.value
+      ).state = "Actif";
+      campaignStore.updateCampaign(campaignId.value, campaign.value);
+      return true;
     }
 
-    function _findIndexChapter(chapterId) {
-        return campaign.value.chapters.findIndex(({ id }) => (id === chapterId));
+    return false;
+  }
+
+  function completeChapter(passwordComplete) {
+    const chapters = [...campaign.value.chapters];
+
+    const chapter = chapters.find((c) => c.resolutionMdp === passwordComplete);
+
+    if (chapter) {
+      campaign.value.chapters.find(
+        (c) => c.resolutionMdp === passwordComplete
+      ).state = "Terminé";
+      campaignStore.updateCampaign(campaignId.value, campaign.value);
+      return true;
     }
 
-    function listChapters(){
-        return campaign.value.chapters
-    }
+    return false;
+  }
 
     function addChapter(newChapter) {
         campaign.value.chapters.push({
@@ -58,7 +140,6 @@ export const useChapterStore = defineStore('chapters', () => {
 
     function modifyChapter(chapterId, chapterModifiee) {
         const chapter = _findChapter(chapterId)
-        console.log(chapter)
 
         chapter.name = chapterModifiee.name
         chapter.description = chapterModifiee.description
@@ -137,5 +218,5 @@ export const useChapterStore = defineStore('chapters', () => {
         return false;
     }
 
-    return { listChapters, addChapter, modifyChapter, deleteChapter, modifyStateChapter, duplicateChapter, addQuestToChapter, removeQuestFromChapter, updateQuestInChapter, setCampaignId }
-})
+    return { listChapters, addChapter, modifyChapter, deleteChapter, modifyStateChapter, duplicateChapter, addQuestToChapter, removeQuestFromChapter, updateQuestInChapter, setCampaignId, activeChapter, completeChapter }
+});

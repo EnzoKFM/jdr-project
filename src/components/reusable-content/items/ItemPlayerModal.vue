@@ -1,25 +1,28 @@
 <script setup>
-    import { reactive } from "vue";
-    // Besoin du playerStore
+import { reactive } from "vue";
+// Besoin du playerStore
+import { usePlayerStore } from "@/stores/playerStore";
 
-    const props = defineProps({
-      show: {
-          type: Boolean,
-          default: false,
-      }
-    });
+const playerStore = usePlayerStore();
 
-    const emit = defineEmits(["close", "save"]);
+const props = defineProps({
+  show: {
+    type: Boolean,
+    default: false,
+  },
+});
 
-    const formData = reactive({
-        name: "",
-        description: "",
-        mjComment: "",
-    });
+const emit = defineEmits(["close", "save"]);
 
-    const handleSubmit = () => {
-        emit("save", formData.playerId);
-    };
+const formData = reactive({
+  name: "",
+  description: "",
+  mjComment: "",
+});
+
+const handleSubmit = () => {
+  emit("save", formData.playerId);
+};
 </script>
 
 <template>
@@ -42,14 +45,19 @@
             <label class="block text-sm font-semibold text-gray-700 mb-2">
               💬 Joueur
             </label>
-            <select 
-              v-model="formData.playerId" 
+            <select
+              v-model="formData.playerId"
               class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all resize-none"
             >
-              <!-- <option v-for="player in playerStore.listPlayers" :value='player.value.id'>{{ player.name }}</option> -->
-               <option value="player_001">MICHEL</option>
+              <option
+                v-for="player in playerStore.listPlayers()"
+                :value="player.id"
+              >
+                {{ player.name }}
+              </option>
+              <!-- <option value="player_001">MICHEL</option>
                <option value="player_002">PAUL</option>
-               <option value="player_003">JACK</option>
+               <option value="player_003">JACK</option> -->
             </select>
           </div>
 

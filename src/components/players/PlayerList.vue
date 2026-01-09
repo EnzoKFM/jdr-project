@@ -3,86 +3,87 @@
 		players: { type: Array, required: true },
 	});
 
-	const emit = defineEmits(["edit", "delete", "duplicate"]);
+	const emit = defineEmits(["edit", "delete", "duplicate", "show"]);
 </script>
 
 <template>
-	<div class="overflow-x-auto">
-		<table class="min-w-full border border-slate-700 rounded-lg overflow-hidden">
-			<thead class="bg-slate-800">
-				<tr>
-					<th class="px-4 py-3 text-left text-sm font-medium text-slate-300">
-						Nom
-					</th>
-					<th class="px-4 py-3 text-left text-sm font-medium text-slate-300">
-						État
-					</th>
-					<th class="px-4 py-3 text-left text-sm font-medium text-slate-300">
-						Description
-					</th>
-					<th class="px-4 py-3 text-left text-sm font-medium text-slate-300">
-						Commentaire (MJ)
-					</th>
-					<th class="px-4 py-3 text-right text-sm font-medium text-slate-300">
-						Actions
-					</th>
-				</tr>
-			</thead>
+	<div class="p-4 flex flex-col gap-y-4">
+		<div class="space-y-2">
+            <button
+                @click="emit('show')"
+                class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 cursor-pointer"
+            >
+                <span class="text-xl">+</span>
+                Nouveau Joueur
+            </button>
+        </div>
+        <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+            <table class="w-full border-collapse bg-white text-sm text-gray-700">
+                
+                <thead class="bg-gray-100 text-xs uppercase tracking-wide text-gray-600">
+					<tr>
+						<th class="px-6 py-3 text-left font-semibold">Nom</th>
+						<th class="px-6 py-3 text-left font-semibold">État</th>
+						<th class="px-6 py-3 text-left font-semibold">Description</th>
+						<th class="px-6 py-3 text-left font-semibold">Commentaire (MJ)</th>
+						<th class="px-6 py-3 text-left font-semibold">Actions</th>
+					</tr>
+                </thead>
 
-			<tbody class="divide-y divide-slate-700 bg-slate-900 text-slate-300">
-				<tr v-for="p in players" :key="p.id" class="hover:bg-slate-800 transition">
-					<td class="px-4 py-3 font-medium">
-						{{ p.name }}
-					</td>
+                <tbody class="divide-y divide-gray-200">
+                    <tr 
+                        class="hover:bg-gray-50 transition-colors"
+                        v-for="p in players"
+                        :key="p.id"
+                    >
+						<td class="px-6 py-4 text-gray-600">
+                            {{ p.name || '—' }}
+                        </td>
+                        <td
+                            class="px-6 py-4 font-medium text-gray-900"
+                        >
+                            <span :class="[
+								'px-2 py-1 rounded-full text-xs font-semibold',
+								p.state === 'vivant'
+									? 'bg-emerald-600/20 text-emerald-400'
+									: 'bg-red-600/20 text-red-400',
+							]">
+								{{ p.state }}
+							</span>
+                        </td>
 
-					<td class="px-4 py-3">
-						<span :class="[
-							'px-2 py-1 rounded-full text-xs font-semibold',
-							p.state === 'vivant'
-								? 'bg-emerald-600/20 text-emerald-400'
-								: 'bg-red-600/20 text-red-400',
-						]">
-							{{ p.state }}
-						</span>
-					</td>
+                        <td class="px-6 py-4 text-gray-600">
+                            {{ p.description || '—' }}
+                        </td>
 
-					<td class="px-4 py-3">
-						{{ p.description || '—' }}
-					</td>
+                        <td class="px-6 py-4 text-gray-600">
+                            {{ p.comment || '—' }}
+                        </td>
 
-					<td class="px-4 py-3">
-						{{ p.comment || '—' }}
-					</td>
+                        <td class="flex gap-6 py-4 justify-center">
 
-					<td class="px-4 py-3 text-right flex justify-end gap-2">
-						<button
-							@click="emit('duplicate', p)"
-							class="px-2 py-1 rounded-md bg-slate-700/60 text-slate-300 hover:bg-slate-600 hover:text-white transition text-xs"
-							title="Dupliquer"
-						>
-							⧉
-						</button>
-						<button
-							@click="emit('edit', p)"
-							class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full hover:bg-indigo-500 transition"
-						>
-							✎
-						</button>
-						<button
-							@click="emit('delete', p)"
-							class="bg-red-600 text-white text-xs px-3 py-1 rounded-full hover:bg-red-500 transition"
-						>
-							🗑
-						</button>
-					</td>
-				</tr>
-
-				<tr v-if="players.length === 0">
-					<td colspan="5" class="px-4 py-6 text-center text-slate-400">
-						Aucun joueur pour le moment
-					</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
+                            <button
+                                @click="emit('edit', p)"
+                                class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                            >
+                                ✏️ Modifier
+                            </button>
+                            <button
+                                @click="emit('delete', p)"
+                                class="bg-gradient-to-r from-rose-500 to-red-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-rose-600 hover:to-red-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                            >
+                                🗑️ Supprimer
+                            </button>
+                            <button
+                                @click="emit('duplicate', p)"
+                                class="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-amber-600 hover:to-yellow-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                            >
+                                📚 Dupliquer
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </template>
