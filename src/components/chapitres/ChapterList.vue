@@ -4,7 +4,6 @@ import { useChapterStore } from "@/stores/chaptersStore";
 import ChapterModal from "./ChapterModal.vue";
 import ChapterDeleteModal from "./ChapterDeleteModal.vue";
 import ChapterStateModal from "./ChapterStateModal.vue";
-import ChapterPasswordModal from "./ChapterPasswordModal.vue";
 import { watchEffect  } from "vue";
 
 const props = defineProps({
@@ -31,8 +30,6 @@ const chapterToDelete = ref(null);
 const showModal = ref(false);
 const showDeleteModal = ref(false);
 const showStateModal = ref(false);
-const showPasswordActivateModal = ref(false);
-const showPasswordResoluteModal = ref(false);
 
 const openCreateModal = () => {
   editingChapter.value = null;
@@ -48,16 +45,6 @@ const handleEdit = (chapter) => {
 const handleStateEdit = (chapter) => {
   editingChapter.value = chapter;
   showStateModal.value = true;
-};
-
-const handlePasswordActivate = (chapter) => {
-  editingChapter.value = chapter;
-  showPasswordActivateModal.value = true;
-};
-
-const handlePasswordResolute = (chapter) => {
-  editingChapter.value = chapter;
-  showPasswordResoluteModal.value = true;
 };
 
 const handleSave = (formData) => {
@@ -115,24 +102,6 @@ function modifierEtatchapter(etat) {
   chapterStore.modifyStateChapter(editingChapter.value.id, etat);
   closeStateModal();
 }
-
-const activateChapter = (enteredPassword) => {
-  if (enteredPassword !== editingChapter.value.activationMdp) {
-    alert("Mot de passe incorrect");
-  } else {
-    chapterStore.modifyStateChapter(editingChapter.value.id, "Activé");
-  }
-  closeStateModal();
-};
-
-const resoluteChapter = (enteredPassword) => {
-  if (enteredPassword !== editingChapter.value.resolutionMdp) {
-    alert("Mot de passe incorrect");
-  } else {
-    chapterStore.modifyStateChapter(editingChapter.value.id, "Terminé");
-  }
-  closeStateModal();
-};
 
 const duplicateChapter = (chapter) => {
   chapterStore.duplicateChapter(chapter);
@@ -255,20 +224,6 @@ const duplicateChapter = (chapter) => {
                   >
                     ♾️ Modifier l'état
                   </button>
-                  <button
-                    @click="handlePasswordActivate(chapter)"
-                    class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
-                    v-show="chapter.state === 'Inactif'"
-                  >
-                    ✔️ Activer
-                  </button>
-                  <button
-                    @click="handlePasswordResolute(chapter)"
-                    class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
-                    v-show="chapter.state === 'Activé'"
-                  >
-                    ✔️ Terminer
-                  </button>
                 </div>
               </td>
             </tr>
@@ -300,22 +255,6 @@ const duplicateChapter = (chapter) => {
     :chapter="editingChapter"
     @close="closeStateModal"
     @save="modifierEtatchapter"
-  />
-
-  <!-- Modal pour activer un chapter -->
-  <ChapterPasswordModal
-    :show="showPasswordActivateModal"
-    :chapter="editingChapter"
-    @close="closeStateModal"
-    @save="activateChapter"
-  />
-
-  <!-- Modal pour résoudre un chapter -->
-  <ChapterPasswordModal
-    :show="showPasswordResoluteModal"
-    :chapter="editingChapter"
-    @close="closeStateModal"
-    @save="resoluteChapter"
   />
 
 </template>
