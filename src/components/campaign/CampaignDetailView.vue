@@ -5,6 +5,7 @@ import { useCampaignStore } from "@/stores/campaignStore";
 import ChapterList from "../chapitres/ChapterList.vue";
 import { getStatusIcon } from "../utils/campaignUtils";
 import { formatDate } from "../utils/dateUtils";
+import ContentDetails from "../reusable-content/ContentDetails.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -244,8 +245,7 @@ const handleMoveDown = (chapter) => {
         <div v-else-if="activeTab === 'contents'">
           <h2 class="text-xl font-bold mb-4">🗂️ Contenus Réutilisables</h2>
           <div class="text-center py-12 bg-gray-50 rounded-lg">
-            <div class="text-6xl mb-4">🚧</div>
-            <p class="text-xl text-gray-600 mb-2">Section en développement</p>
+            <ContentDetails />
           </div>
         </div>
       </div>
