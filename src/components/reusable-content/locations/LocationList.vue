@@ -145,7 +145,7 @@
     <!-- Modal de création/édition -->
     <LocationModal
       :show="showModal"
-      :item="editingLocation"
+      :location="editingLocation"
       @close="closeModal"
       @save="handleSave"
     />

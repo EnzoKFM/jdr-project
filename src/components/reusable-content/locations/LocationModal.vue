@@ -1,49 +1,53 @@
 <script setup>
-    import { reactive, watch, computed } from "vue";
-    // Besoin du playerStore
+import { reactive, watch, computed } from "vue";
+// Besoin du playerStore
 
-    const props = defineProps({
-    show: {
-        type: Boolean,
-        default: false,
-    },
-    location: {
-        type: Object,
-        default: null,
-    },
-    });
+const props = defineProps({
+  show: {
+    type: Boolean,
+    default: false,
+  },
+  location: {
+    type: Object,
+    default: null,
+  },
+});
 
-    const emit = defineEmits(["close", "save"]);
+const emit = defineEmits(["close", "save"]);
 
-    const formData = reactive({
-        name: "",
-        description: "",
-        mjComment: "",
-    });
+const formData = reactive({
+  name: "",
+  description: "",
+  mjComment: "",
+});
 
-    const isEditing = computed(() => props.location !== null);
+const isEditing = computed(() => props.location !== null);
 
-    // Quand le modal s'ouvre avec une campagne, remplir le formulaire
-    watch(
-    () => props.item,
-    (newLocation) => {
-        if (newLocation) {
-            formData.name = newLocation.name;
-            formData.description = newLocation.description || "";
-            formData.mjComment = newLocation.mjComment || "";
-        } else {
-            // Réinitialiser le formulaire
-            formData.name = "";
-            formData.description = "";
-            formData.mjComment = "";
-        }
-    },
-    { immediate: true }
-    );
+// Quand le modal s'ouvre avec une campagne, remplir le formulaire
+watch(
+  () => props.location,
+  (newLocation) => {
+    if (newLocation) {
+      formData.name = newLocation.name;
+      formData.description = newLocation.description || "";
+      formData.mjComment = newLocation.mjComment || "";
+    } else {
+      // Réinitialiser le formulaire
+      formData.name = "";
+      formData.description = "";
+      formData.mjComment = "";
+    }
+  },
+  { immediate: true }
+);
 
-    const handleSubmit = () => {
-        emit("save", { ...formData });
-    };
+const handleSubmit = () => {
+  emit("save", { ...formData });
+
+  formData.name = "";
+  formData.description = "";
+  formData.mjComment = "";
+};
 </script>
 
 <template>

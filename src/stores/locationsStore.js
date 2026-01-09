@@ -48,12 +48,12 @@ export const useLocationStore = defineStore('locations', () => {
         campaignStore.updateCampaign(campaignId.value, campaign.value)
     }
 
-    function modifyLocation(itemId, LocationModifiee) {
+    function modifyLocation(itemId, locationModifiee) {
         const location = _findLocation(itemId)
 
-        location.name = LocationModifiee.name
-        location.text = LocationModifiee.text
-        location.mjComment = LocationModifiee.mjComment
+        location.name = locationModifiee.name
+        location.description = locationModifiee.description
+        location.mjComment = locationModifiee.mjComment
 
         campaignStore.updateCampaign(campaignId.value, campaign.value)
     }
