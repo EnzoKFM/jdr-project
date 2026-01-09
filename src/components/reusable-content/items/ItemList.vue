@@ -3,6 +3,7 @@
     import { useItemStore } from '@/stores/itemsStore';
     import ItemModal from './ItemModal.vue';
     import ItemDeleteModal from './ItemDeleteModal.vue';
+    import ItemPlayerModal from './ItemPlayerModal.vue';
 
     const props = defineProps({
         campaignId : { type: String }
@@ -16,18 +17,33 @@
 
     const showModal = ref(false);
     const showDeleteModal = ref(false);
+    const showGiveModal = ref(false);
 
-    const openCreateModal = () => {
+    // Créer
+    const handleCreate = () => {
         editingItem.value = null;
         showModal.value = true;
     };
 
-    // Édition
+    // Editer
     const handleEdit = (item) => {
         editingItem.value = item;
         showModal.value = true;
     };
 
+    // Donner
+    const handleGive = (item) => {
+        editingItem.value = item;
+        showGiveModal.value = true;
+    }
+
+    // Supprimer
+    const handleDeleteConfirm = (item) => {
+        itemToDelete.value = item;
+        showDeleteModal.value = true;
+    };
+
+    // Créer / Editer - Execution
     const handleSave = (formData) => {
         if (editingItem.value) {
             // Mise à jour
@@ -39,16 +55,9 @@
         closeModal();
     };
 
-    // Fermer le modal
-    const closeModal = () => {
-        showModal.value = false;
-    };
-
-    // Suppression - Confirmation
-    const handleDeleteConfirm = (item) => {
-        itemToDelete.value = item;
-        showDeleteModal.value = true;
-    };
+    const handleGiveSave = (playerId) => {
+        itemStore.linkItem(editingItem.value.id, playerId)
+    }
 
     // Suppression - Exécution
     const handleDelete = () => {
@@ -56,6 +65,13 @@
             itemStore.deleteItem(itemToDelete.value.id, ""); // A MODIFIER
             closeDeleteModal();
         }
+    };
+
+    // Fermer le modal
+    const closeModal = () => {
+        editingItem.value = null;
+        showModal.value = false;
+        showGiveModal.value = false;
     };
 
     // Fermer le modal de suppression
@@ -67,13 +83,17 @@
     const duplicateItem = (item) => {
         itemStore.duplicateItem(item)
     }
+
+    const unlinkItem = (item) => {
+        itemStore.unlinkItem(item.id, item.playerId)
+    }
 </script>
 
 <template>
     <div class="p-4 flex flex-col gap-y-4">
         <div class="space-y-2">
             <button
-                @click="openCreateModal"
+                @click="handleCreate"
                 class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 cursor-pointer"
             >
                 <span class="text-xl">+</span>
@@ -132,6 +152,20 @@
                             >
                                 📚 Dupliquer
                             </button>
+                            <button
+                                @click="handleGive(item)"
+                                class="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-amber-600 hover:to-yellow-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                v-show="item.playerId == ''"
+                            >
+                                ✋ Donner
+                            </button>
+                            <button
+                                @click="unlinkItem(item)"
+                                class="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-amber-600 hover:to-yellow-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                v-show="item.playerId !== ''"
+                            >
+                                ✊ Reprendre
+                            </button>
                         </td>
                     </tr>
                 </tbody>
@@ -145,6 +179,13 @@
       :item="editingItem"
       @close="closeModal"
       @save="handleSave"
+    />
+
+    <!-- Modal pour donner l'objet à un joueur -->
+    <ItemPlayerModal
+        :show="showGiveModal"
+        @close="closeModal"
+        @save="handleGiveSave"
     />
 
     <!-- Modal de confirmation de suppression -->

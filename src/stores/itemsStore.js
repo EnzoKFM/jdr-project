@@ -31,6 +31,7 @@ export const useItemStore = defineStore('items', () => {
         campaign.value.items.push({
             id: crypto.randomUUID(),
             ...newItem,
+            playerId: "",
         })
         campaignStore.updateCampaign(campaignId.value, campaign.value)
     }
@@ -38,6 +39,15 @@ export const useItemStore = defineStore('items', () => {
     function linkItem(itemId, playerId){
         const player = campaign.value.players.find(({id}) => (id == playerId))
         player.inventory.push(itemId)
+        campaignStore.updateCampaign(campaignId.value, campaign.value)
+    }
+
+    function unlinkItem(itemId, playerId){
+        const player = campaign.value.players.find(({id}) => (id == playerId))
+        const index = player.value.inventory.findIndex((id) => (id == playerId))
+
+        player.value.inventory.splice(index, 1)
+        campaignStore.updateCampaign(campaignId.value, campaign.value)
     }
 
     function duplicateItem(itemModel) {
@@ -50,6 +60,7 @@ export const useItemStore = defineStore('items', () => {
         campaign.value.items.push({
             id: crypto.randomUUID(),
             ...itemData,
+            playerId: "",
         })
         campaignStore.updateCampaign(campaignId.value, campaign.value)
     }
@@ -78,5 +89,5 @@ export const useItemStore = defineStore('items', () => {
         campaignStore.updateCampaign(campaignId.value, campaign.value)
     }
 
-    return { listItems, addItem, modifyItem, deleteItem, duplicateItem, linkItem, setCampaignId }
+    return { listItems, addItem, modifyItem, deleteItem, duplicateItem, linkItem, setCampaignId, unlinkItem }
 })

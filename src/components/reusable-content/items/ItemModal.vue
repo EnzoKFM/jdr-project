@@ -1,6 +1,5 @@
 <script setup>
     import { reactive, watch, computed } from "vue";
-    // Besoin du playerStore
 
     const props = defineProps({
     show: {
@@ -103,20 +102,6 @@
               ⚠️ Ce commentaire ne sera visible que pour le MJ
             </p>
           </div>
-
-          <!-- Commentaire MJ -->
-          <!-- <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">
-              💬 Joueur
-            </label>
-            <select 
-              v-model="formData.playerId" 
-              class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all resize-none"
-            >
-              <option value="">Aucun</option>
-              <option v-for="player in campaign.value.players" :value='player.value.id'>{{ player.name }}</option>
-            </select>
-          </div> -->
 
           <!-- Boutons -->
           <div class="flex gap-3 pt-4">

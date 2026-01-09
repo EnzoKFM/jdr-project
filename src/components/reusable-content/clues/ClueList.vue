@@ -17,17 +17,25 @@
     const showModal = ref(false);
     const showDeleteModal = ref(false);
 
-    const openCreateModal = () => {
+    // Créer
+    const handleCreate = () => {
         editingClue.value = null;
         showModal.value = true;
     };
 
-    // Édition
+    // Editer
     const handleEdit = (item) => {
         editingClue.value = item;
         showModal.value = true;
     };
 
+    // Supprimer
+    const handleDeleteConfirm = (item) => {
+        clueToDelete.value = item;
+        showDeleteModal.value = true;
+    };
+
+    // Créer/Editer - Exécution
     const handleSave = (formData) => {
         if (editingClue.value) {
             // Mise à jour
@@ -39,17 +47,6 @@
         closeModal();
     };
 
-    // Fermer le modal
-    const closeModal = () => {
-        showModal.value = false;
-    };
-
-    // Suppression - Confirmation
-    const handleDeleteConfirm = (item) => {
-        clueToDelete.value = item;
-        showDeleteModal.value = true;
-    };
-
     // Suppression - Exécution
     const handleDelete = () => {
         if (clueToDelete.value) {
@@ -58,18 +55,24 @@
         }
     };
 
+    // Fermer le modal
+    const closeModal = () => {
+        editingClue.value = null;
+        showModal.value = false;
+    };
+
     // Fermer le modal de suppression
     const closeDeleteModal = () => {
         showDeleteModal.value = false;
         clueToDelete.value = null;
     };
 
-    const duplicateItem = (item) => {
-        clueStore.duplicateClue(item)
+    const duplicateItem = (clue) => {
+        clueStore.duplicateClue(clue)
     }
 
-    const giveClueToAll = (item) => {
-        clueStore.giveClue(item)
+    const giveClueToAll = (clue) => {
+        clueStore.giveClue(clue)
     }
 </script>
 
@@ -77,7 +80,7 @@
     <div class="p-4 flex flex-col gap-y-4">
         <div class="space-y-2">
             <button
-                @click="openCreateModal"
+                @click="handleCreate"
                 class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 cursor-pointer"
             >
                 <span class="text-xl">+</span>
@@ -99,48 +102,49 @@
                 <tbody class="divide-y divide-gray-200">
                     <tr 
                         class="hover:bg-gray-50 transition-colors"
-                        v-for="item in clueStore.listClues()"
+                        v-for="clue in clueStore.listClues()"
                         :key="item.id"
                     >
                         <td
                             class="px-6 py-4 font-medium text-gray-900"
                         >
-                            {{ item.name }}
+                            {{ clue.name }}
                         </td>
 
                         <td class="px-6 py-4 text-gray-600">
-                            {{ item.text }}
+                            {{ clue.text }}
                         </td>
 
                         <td class="px-6 py-4 text-gray-600">
-                            {{ item.mjComment }}
+                            {{ clue.mjComment }}
                         </td>
 
                         <td class="flex gap-6 py-4 justify-center">
 
                             <button
-                                @click="handleEdit(item)"
+                                @click="handleEdit(clue)"
                                 class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
                             >
                                 ✏️ Modifier
                             </button>
                             <button
-                                @click="handleDeleteConfirm(item)"
+                                @click="handleDeleteConfirm(clue)"
                                 class="bg-gradient-to-r from-rose-500 to-red-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-rose-600 hover:to-red-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
                             >
                                 🗑️ Supprimer
                             </button>
                             <button
-                                @click="duplicateItem(item)"
+                                @click="duplicateItem(clue)"
                                 class="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-amber-600 hover:to-yellow-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
                             >
                                 📚 Dupliquer
                             </button>
                             <button
-                                @click="giveClueToAll(item)"
+                                @click="giveClueToAll(clue)"
                                 class="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-amber-600 hover:to-yellow-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                                v-show="clue.isGiven == false"
                             >
-                                ✋ Donner
+                                ✋ Donner à tous
                             </button>
                         </td>
                     </tr>

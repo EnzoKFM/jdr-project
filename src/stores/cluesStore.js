@@ -31,6 +31,7 @@ export const useClueStore = defineStore('clues', () => {
         campaign.value.clues.push({
             id: crypto.randomUUID(),
             ...newClue,
+            isGiven: false,
         })
         campaignStore.updateCampaign(campaignId.value, campaign.value)
     }
@@ -39,6 +40,9 @@ export const useClueStore = defineStore('clues', () => {
         campaign.value.players.forEach(player => {
             player.inventory.push(clueId)
         });
+        const clue = _findClue(clueId)
+        clue.isGiven = true;
+        campaignStore.updateCampaign(campaignId.value, campaign.value)
     }
 
     function duplicateClue(clueModel) {

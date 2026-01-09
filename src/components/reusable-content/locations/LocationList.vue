@@ -17,17 +17,25 @@
     const showModal = ref(false);
     const showDeleteModal = ref(false);
 
-    const openCreateModal = () => {
+    // Créer
+    const handleCreate = () => {
         editingLocation.value = null;
         showModal.value = true;
     };
 
-    // Édition
-    const handleEdit = (item) => {
-        editingLocation.value = item;
+    // Editer
+    const handleEdit = (location) => {
+        editingLocation.value = location;
         showModal.value = true;
     };
 
+    // Supprimer
+    const handleDeleteConfirm = (location) => {
+        locationToDelete.value = location;
+        showDeleteModal.value = true;
+    };
+
+    // Créer/Editer - Execution
     const handleSave = (formData) => {
         if (editingLocation.value) {
             // Mise à jour
@@ -39,17 +47,6 @@
         closeModal();
     };
 
-    // Fermer le modal
-    const closeModal = () => {
-        showModal.value = false;
-    };
-
-    // Suppression - Confirmation
-    const handleDeleteConfirm = (item) => {
-        locationToDelete.value = item;
-        showDeleteModal.value = true;
-    };
-
     // Suppression - Exécution
     const handleDelete = () => {
         if (locationToDelete.value) {
@@ -58,14 +55,20 @@
         }
     };
 
+    // Fermer le modal
+    const closeModal = () => {
+        editingLocation.value = null;
+        showModal.value = false;
+    };
+
     // Fermer le modal de suppression
     const closeDeleteModal = () => {
         showDeleteModal.value = false;
         locationToDelete.value = null;
     };
 
-    const duplicateItem = (item) => {
-        locationStore.duplicateLocation(item)
+    const duplicateItem = (location) => {
+        locationStore.duplicateLocation(location)
     }
 </script>
 
@@ -73,7 +76,7 @@
     <div class="p-4 flex flex-col gap-y-4">
         <div class="space-y-2">
             <button
-                @click="openCreateModal"
+                @click="handleCreate"
                 class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 cursor-pointer"
             >
                 <span class="text-xl">+</span>
