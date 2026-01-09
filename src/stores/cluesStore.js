@@ -74,9 +74,9 @@ export const useClueStore = defineStore('clues', () => {
         campaign.value.clues.splice(index, 1)
 
         campaign.value.players.forEach(player => {
-            const indexInventory = player.value.inventory.findIndex((id) => (id == clueId))
+            const indexInventory = player.inventory.findIndex((id) => (id == clueId))
 
-            player.value.inventory.splice(indexInventory, 1)
+            player.inventory.splice(indexInventory, 1)
         });
 
         campaignStore.updateCampaign(campaignId.value, campaign.value)

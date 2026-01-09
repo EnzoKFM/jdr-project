@@ -39,14 +39,21 @@ export const useItemStore = defineStore('items', () => {
     function linkItem(itemId, playerId){
         const player = campaign.value.players.find(({id}) => (id == playerId))
         player.inventory.push(itemId)
+
+        const item = _findItem(itemId)
+        item.playerId = playerId
+
         campaignStore.updateCampaign(campaignId.value, campaign.value)
     }
 
     function unlinkItem(itemId, playerId){
         const player = campaign.value.players.find(({id}) => (id == playerId))
-        const index = player.value.inventory.findIndex((id) => (id == playerId))
+        const index = player.inventory.findIndex((id) => (id == playerId))
+        player.inventory.splice(index, 1)
 
-        player.value.inventory.splice(index, 1)
+        const item = _findItem(itemId)
+        item.playerId = ""
+
         campaignStore.updateCampaign(campaignId.value, campaign.value)
     }
 
@@ -80,10 +87,10 @@ export const useItemStore = defineStore('items', () => {
         campaign.value.items.splice(index, 1)
 
         if(playerId !== ""){
-            const player = campaign.value.player.find(({id}) => (id == playerId))
-            const indexInventory = player.value.inventory.findIndex((id) => (id == itemId))
+            const player = campaign.value.players.find(({id}) => (id == playerId))
+            const indexInventory = player.inventory.findIndex((id) => (id == itemId))
 
-            player.value.inventory.splice(indexInventory, 1)
+            player.inventory.splice(indexInventory, 1)
         }
 
         campaignStore.updateCampaign(campaignId.value, campaign.value)

@@ -1,5 +1,5 @@
 <script setup>
-    import { reactive, watch, computed } from "vue";
+    import { reactive } from "vue";
     // Besoin du playerStore
 
     const props = defineProps({
@@ -46,7 +46,10 @@
               v-model="formData.playerId" 
               class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all resize-none"
             >
-              <option v-for="player in playerStore.listPlayers" :value='player.value.id'>{{ player.name }}</option>
+              <!-- <option v-for="player in playerStore.listPlayers" :value='player.value.id'>{{ player.name }}</option> -->
+               <option value="player_001">MICHEL</option>
+               <option value="player_002">PAUL</option>
+               <option value="player_003">JACK</option>
             </select>
           </div>
 

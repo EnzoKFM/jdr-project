@@ -57,12 +57,13 @@
 
     const handleGiveSave = (playerId) => {
         itemStore.linkItem(editingItem.value.id, playerId)
+        closeModal();
     }
 
     // Suppression - Exécution
     const handleDelete = () => {
         if (itemToDelete.value) {
-            itemStore.deleteItem(itemToDelete.value.id, ""); // A MODIFIER
+            itemStore.deleteItem(itemToDelete.value.id, itemToDelete.value.playerId);
             closeDeleteModal();
         }
     };
