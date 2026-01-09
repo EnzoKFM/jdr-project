@@ -67,7 +67,7 @@ export const useItemStore = defineStore('items', () => {
 
         if(playerId !== ""){
             const player = campaign.value.player.find(({id}) => (id == playerId))
-            const indexInventory = player.value.inventory.findIndex(itemId)
+            const indexInventory = player.value.inventory.findIndex((id) => (id == itemId))
 
             player.value.inventory.splice(indexInventory, 1)
         }

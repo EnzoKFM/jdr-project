@@ -1,15 +1,17 @@
 <script setup >
     import { ref } from 'vue';
     import ItemList from './items/ItemList.vue';
+import ClueList from './clues/ClueList.vue';
+import LocationList from './locations/LocationList.vue';
     
     // Onglet actif
     const activeTab = ref("locations");
 
     // Onglets disponibles
     const tabs = [
-        { id: "locations", label: "Lieux", icon: "📊" },
-        { id: "items", label: "Objets", icon: "📑" },
-        { id: "clues", label: "Indices", icon: "👥" },
+        { id: "locations", label: "Lieux", icon: "🌍" },
+        { id: "items", label: "Objets", icon: "🔑" },
+        { id: "clues", label: "Indices", icon: "❓" },
     ];
 </script>
 
@@ -34,7 +36,7 @@
     </div>
     <div v-if="activeTab === 'locations'">
         <div class="text-center py-12 bg-gray-50 rounded-lg">
-            <p>lieux</p>
+            <LocationList />
         </div>
     </div>
     <div v-else-if="activeTab === 'items'">
@@ -44,7 +46,7 @@
     </div>
     <div v-else-if="activeTab === 'clues'">
         <div class="text-center py-12 bg-gray-50 rounded-lg">
-            <p>indices</p>
+            <ClueList />
         </div>
     </div>
 </template>
