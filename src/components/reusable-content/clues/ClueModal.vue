@@ -29,12 +29,12 @@
     (newItem) => {
         if (newItem) {
             formData.name = newItem.name;
-            formData.text = newItem.text || "";
+            formData.description = newItem.description || "";
             formData.mjComment = newItem.mjComment || "";
         } else {
             // Réinitialiser le formulaire
             formData.name = "";
-            formData.text = "";
+            formData.description = "";
             formData.mjComment = "";
         }
     },
@@ -43,6 +43,10 @@
 
     const handleSubmit = () => {
         emit("save", { ...formData });
+
+        formData.name = "";
+        formData.description = "";
+        formData.mjComment = "";
     };
 </script>
 
@@ -78,10 +82,10 @@
           <!-- Description -->
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">
-              Texte de l'indice
+              Description de l'indice
             </label>
             <textarea
-              v-model="formData.text"
+              v-model="formData.description"
               rows="3"
               class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all resize-none"
               placeholder="Donner le texte de l'indice..."
