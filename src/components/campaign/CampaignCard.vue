@@ -137,35 +137,35 @@ const formattedUpdatedDate = computed(() => {
       <div class="flex gap-2 flex-wrap pt-4 border-t border-gray-200">
         <button
           @click="$emit('view-details', campaign.id)"
-          class="bg-cyan-500 text-white px-4 py-2 rounded-lg hover:bg-cyan-600 transition-all text-sm font-semibold flex items-center gap-1"
+          class="bg-cyan-500 text-white px-4 py-2 rounded-lg hover:bg-cyan-600 transition-all text-sm font-semibold flex items-center gap-1 cursor-pointer"
         >
           👁️ Détails
         </button>
 
         <button
           @click="$emit('edit', campaign)"
-          class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all text-sm font-semibold flex items-center gap-1"
+          class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all text-sm font-semibold flex items-center gap-1 cursor-pointer"
         >
           ✏️ Modifier
         </button>
 
         <button
           @click="$emit('duplicate', campaign.id)"
-          class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-all text-sm font-semibold flex items-center gap-1"
+          class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-all text-sm font-semibold flex items-center gap-1 cursor-pointer"
         >
           📋 Dupliquer
         </button>
 
         <button
           @click="$emit('export', campaign.id)"
-          class="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition-all text-sm font-semibold flex items-center gap-1"
+          class="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition-all text-sm font-semibold flex items-center gap-1 cursor-pointer"
         >
           📤 Exporter
         </button>
 
         <button
           @click="$emit('delete', campaign)"
-          class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all text-sm font-semibold flex items-center gap-1 ml-auto"
+          class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all text-sm font-semibold flex items-center gap-1 ml-auto cursor-pointer"
         >
           🗑️ Supprimer
         </button>

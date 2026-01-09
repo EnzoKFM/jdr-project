@@ -63,18 +63,7 @@
 
 <template>
     <div class="space-y-6">
-        <div class="flex justify-between items-center">
-            <h3 class="text-lg font-semibold">Liste des joueurs</h3>
-
-            <button
-                @click="showModal = true"
-                class="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition font-semibold"
-            >
-                + Ajouter un joueur
-            </button>
-        </div>
-
-        <PlayerList :players="playerStore.listPlayers()" @edit="handleEdit" @delete="handleDeleteClick" @duplicate="handleDuplicate" />
+        <PlayerList :players="playerStore.listPlayers()" @edit="handleEdit" @delete="handleDeleteClick" @duplicate="handleDuplicate" @show="showModal = true" />
 
         <PlayerModal :show="showModal" :player="editedPlayer" @close="() => { showModal = false; editedPlayer = null }" @save="handleSave" />
 

@@ -132,10 +132,8 @@ export const useCampaignStore = defineStore("campaign", {
             }
           }
           // Mettre à jour l'ID de la campagne active
-          //console.log("ici");
           this.activeCampaignId = campaignId;
         } else {
-          //console.log("ici2");
           this.activeCampaignId = null;
         }
 

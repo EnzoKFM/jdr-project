@@ -5,8 +5,6 @@ import { usePlayerStore } from "@/stores/playerStore";
 
 const playerStore = usePlayerStore();
 
-console.log("playerStore.listPlayers : ", playerStore.listPlayers());
-
 const props = defineProps({
   show: {
     type: Boolean,

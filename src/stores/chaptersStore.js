@@ -53,7 +53,6 @@ export const useChapterStore = defineStore("chapters", () => {
 
   function modifyChapter(chapterId, chapterModifiee) {
     const chapter = _findChapter(chapterId);
-    console.log(chapter);
 
     chapter.name = chapterModifiee.name;
     chapter.description = chapterModifiee.description;
@@ -79,14 +78,11 @@ export const useChapterStore = defineStore("chapters", () => {
   }
 
   function activeChapter(passwordActivate) {
-    console.log("dans activeChapter : ", passwordActivate.value);
     const chapters = [...campaign.value.chapters];
-    console.log("chapters : ", chapters);
 
     const chapter = chapters.find(
       (c) => c.activationMdp === passwordActivate.value
     );
-    console.log("chapter trouvé : ", chapter);
 
     if (chapter) {
       campaign.value.chapters.find(
@@ -100,12 +96,9 @@ export const useChapterStore = defineStore("chapters", () => {
   }
 
   function completeChapter(passwordComplete) {
-    console.log("dans completeChapter : ", passwordComplete);
     const chapters = [...campaign.value.chapters];
-    console.log("chapters : ", chapters);
 
     const chapter = chapters.find((c) => c.resolutionMdp === passwordComplete);
-    console.log("chapter trouvé : ", chapter);
 
     if (chapter) {
       campaign.value.chapters.find(
@@ -147,7 +140,6 @@ export const useChapterStore = defineStore("chapters", () => {
 
     function modifyChapter(chapterId, chapterModifiee) {
         const chapter = _findChapter(chapterId)
-        console.log(chapter)
 
         chapter.name = chapterModifiee.name
         chapter.description = chapterModifiee.description

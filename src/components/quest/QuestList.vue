@@ -44,7 +44,6 @@ const handleDeleteQuest = (quest) => {
 };
 
 const handleDuplicateQuest = (quest) => {
-  console.log("Duplication de la quête avec l'ID :", quest.id);
     const newQuest = questStore.dupliquerQuete(quest.id);
     if (newQuest) {
         chapterStore.addQuestToChapter(props.chapter.id, newQuest);
@@ -55,17 +54,6 @@ const handleActivateMjQuest = (quest) => {
     // Mettre à jour la quête dans le chapitre
     const q = props.chapter.quests.find(q => q.id === quest.id);
     if (q) q.etat = 'active';
-};
-
-const handleActivateQuest = (quest) => {
-    const pwd = prompt("Mot de passe d'activation ?");
-    if (questStore.activerQuete(quest.id, pwd) === false) alert("Mot de passe incorrect");
-};
-
-const handleResolveQuest = (quest) => {
-    const pwd = prompt("Mot de passe de résolution ?");
-    const rewards = questStore.resoudreQuete(quest.id, pwd);
-    if (!rewards) alert("Mot de passe incorrect");
 };
 
 const handleAbandonQuest = (quest) => {
@@ -91,7 +79,6 @@ const handleSaveQuest = (formData) => {
 
             // Ajouter la quête au chapitre choisi
             const chapter = chapterStore.listChapters().find(c => c.id === formData.chapterId);
-            console.log('chapter found for new quest:', chapter);
             if (chapter) {
                 chapterStore.addQuestToChapter(formData.chapterId, newQuest);
             }

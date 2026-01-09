@@ -92,7 +92,7 @@ const handleMoveDown = (chapter) => {
         <div class="flex items-center gap-4">
           <button
             @click="goBack"
-            class="text-gray-600 hover:text-gray-900 transition-colors"
+            class="text-gray-600 hover:text-gray-900 transition-colors cursor-pointer"
           >
             <span class="text-2xl">←</span>
           </button>
@@ -132,7 +132,7 @@ const handleMoveDown = (chapter) => {
             v-for="tab in tabs"
             :key="tab.id"
             @click="activeTab = tab.id"
-            class="py-4 px-1 border-b-2 font-medium text-sm transition-all"
+            class="py-4 px-1 border-b-2 font-medium text-sm transition-all cursor-pointer"
             :class="
               activeTab === tab.id
                 ? 'border-blue-500 text-blue-600'
@@ -236,11 +236,12 @@ const handleMoveDown = (chapter) => {
         <!-- Onglet Joueurs (placeholder pour collègue) -->
         <div v-else-if="activeTab === 'players'">
             <h2 class="text-xl font-bold mb-4">👥 Gestion des Joueurs</h2>
-
-            <PlayersSection
-                :campaign-id="campaignId"
-                @update="campaignStore.updateCampaign(campaign.id, $event)"
-            />
+            <div class="text-center py-12 bg-gray-50 rounded-lg">
+              <PlayersSection
+                  :campaign-id="campaignId"
+                  @update="campaignStore.updateCampaign(campaign.id, $event)"
+              />
+            </div>
         </div>
 
         <!-- Onglet Contenus (placeholder pour collègue) -->

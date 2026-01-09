@@ -20,7 +20,6 @@ const form = reactive({
 });
 
 const isEditing = computed(() => props.quest !== null);
-console.log(props.lieux);
 // pré-remplissage édition
 watch(
   () => props.quest,

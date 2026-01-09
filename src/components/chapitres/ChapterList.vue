@@ -100,7 +100,6 @@
 
           // Ajouter la quête au chapitre choisi
           const chapter = chapterStore.listChapters().find(c => c.id === formData.chapterId);
-          console.log('chapter found for new quest:', chapter);
           if (chapter) {
               chapterStore.addQuestToChapter(formData.chapterId, newQuest);
           }

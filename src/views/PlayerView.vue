@@ -4,11 +4,13 @@ import Footer from "@/components/utils/Footer.vue";
 import { useCampaignStore } from "@/stores/campaignStore";
 import { useLocationStore } from "@/stores/locationsStore";
 import { useChapterStore } from "@/stores/chaptersStore";
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
+import useQuetesStore from "@/stores/quest";
 
 const campaignStore = useCampaignStore();
 const locationStore = useLocationStore();
 const chapterStore = useChapterStore();
+const questStore = useQuetesStore();
 
 // Récupérer la campagne
 const campaignId = computed(() => campaignStore.activeCampaignId);
@@ -19,6 +21,13 @@ const campaign = computed(() => {
 
   return null;
 });
+
+onMounted(() => {
+  // initialQuetes = toutes les quêtes de tes chapitres
+  const initialQuetes = chapterStore.listChapters().flatMap(c => c.quests)
+  questStore.initQuetes(initialQuetes)
+})
+
 locationStore.setCampaignId(campaignId.value);
 chapterStore.setCampaignId(campaignId.value);
 
@@ -154,8 +163,6 @@ const getQuestStatusLabel = (state) => {
 
 const availableLocations = computed(() => {
   const locations = locationStore.listLocations();
-
-  console.log(locations);
   return locations;
   // return ["Taverne du Dragon", "Forêt Maudite", "Temple Ancien"];
 });
@@ -165,8 +172,6 @@ const handleMove = () => {
 };
 
 const handleActivateChapter = () => {
-  console.log("Mot de passe : ", activateChapterPassword.value);
-
   const isActivated = chapterStore.activeChapter(activateChapterPassword);
 
   if (isActivated) {
@@ -174,12 +179,9 @@ const handleActivateChapter = () => {
   } else {
     alert("Mot de passe incorrect");
   }
-
-  // alert("TODO : Activation du chapitre");
 };
 
 const handleCompleteChapter = () => {
-  console.log("Mot de passe : ", completeChapterPassword.value);
 
   const isCompleted = chapterStore.completeChapter(
     completeChapterPassword.value
@@ -195,20 +197,31 @@ const handleCompleteChapter = () => {
 };
 
 const handleQuestAction = () => {
-  alert(`TODO : ${questAction.value} de la quête`);
+  if(questAction.value == "activate"){
+    const isActivated = questStore.activerQuete(questPassword.value)
+
+    if (isActivated) {
+      alert("Une nouvelle quête à été activée !");
+    } else {
+      alert("Mot de passe incorrect");
+    }
+  } else {
+    const isCompleted = questStore.resoudreQuete(questPassword.value)
+
+    if (isCompleted) {
+      alert("Une nouvelle quête à été complétée !");
+    } else {
+      alert("Mot de passe incorrect");
+    }
+  }
 };
 
 const handleAvailableItemsForPlayer = computed(() => {
   const tab = [];
-  console.log("campaign.value : ", campaign.value);
-  console.log("selectedPlayer.value : ", selectedPlayer.value);
   if (selectedPlayer) {
     campaign.value.items.forEach((item) => {
-      console.log("dans le foreach item : ", item);
       if (item.playerId === selectedPlayer?.value?.id) {
-        console.log("rentre ici")
         if (item.id === selectedPlayer.value.inventory.includes(item.id)) {
-          console.log("rentre ici 2")
           tab.push(item);
         }
       }
@@ -325,31 +338,31 @@ const handleAvailableItemsForPlayer = computed(() => {
                             v-for="quest in chapter.quests"
                             :key="quest.id"
                             class="bg-white border-l-4 p-3 rounded"
-                            :class="getQuestBorderClass(quest.state)"
+                            :class="getQuestBorderClass(quest.etat)"
                           >
                             <div class="flex justify-between items-center">
                               <div class="flex-1">
                                 <div class="flex items-center gap-2 mb-1">
                                   <span class="text-lg">🎯</span>
                                   <span class="font-semibold text-sm">{{
-                                    quest.name
+                                    quest.nom
                                   }}</span>
                                   <span
                                     class="px-2 py-0.5 text-xs font-bold rounded"
-                                    :class="getQuestBadgeClass(quest.state)"
+                                    :class="getQuestBadgeClass(quest.etat)"
                                   >
-                                    {{ getQuestStatusLabel(quest.state) }}
+                                    {{ getQuestStatusLabel(quest.etat) }}
                                   </span>
                                 </div>
                                 <p class="text-xs text-gray-600 mb-1">
                                   {{ quest.description }}
                                 </p>
                                 <div class="flex gap-2 text-xs text-gray-500">
-                                  <span v-if="quest.location"
-                                    >📍 {{ quest.location }}</span
+                                  <span v-if="quest.lieu"
+                                    >📍 {{ quest.lieu }}</span
                                   >
-                                  <span v-if="quest.reward"
-                                    >🎁 {{ quest.reward }}</span
+                                  <span v-if="quest.recompenses.length != 0"
+                                    >🎁 {{ quest.recompenses }}</span
                                   >
                                 </div>
                               </div>
