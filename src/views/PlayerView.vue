@@ -233,7 +233,6 @@ const handleAvailableItemsForPlayer = computed(() => {
   if (selectedPlayer) {
     campaign.value.items.forEach((item) => {
       if (item.playerId === selectedPlayer?.value?.id) {
-        console.log(selectedPlayer.value.inventory)
         if (selectedPlayer.value.inventory.includes(item.id)) {
           tab.push(item);
         }
@@ -371,7 +370,7 @@ const handleAvailableItemsForPlayer = computed(() => {
                                   {{ quest.description }}
                                 </p>
                                 <div class="flex gap-2 text-xs text-gray-500">
-                                  <span v-if="quest.lieu"
+                                  <span v-if="quest.lieu.length != 0"
                                     >📍 {{ quest.lieu }}</span
                                   >
                                   <span v-if="quest.recompenses.length != 0"
@@ -383,7 +382,7 @@ const handleAvailableItemsForPlayer = computed(() => {
                           </div>
                         </div>
 
-                        <div v-else class="mt-2">non</div>
+                        <div v-else class="mt-2">Aucune quête disponible</div>
 
                         <div class="flex gap-3 text-xs text-gray-500 mt-3">
                           <span
@@ -661,6 +660,32 @@ const handleAvailableItemsForPlayer = computed(() => {
 
                   <p class="mt-1 text-sm text-gray-600">
                     {{ item.description }}
+                  </p>
+                </div>
+              </div>
+              <div
+                v-for="item in campaign.clues"
+                :key="item.id"
+                class="flex items-start gap-4 rounded-xl border p-4 transition hover:shadow-md hover:bg-gray-50 border-gray-300"
+                v-show="item.isGiven === false"
+              >
+                <!-- Icône -->
+                <div
+                  class="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 text-gray-600 text-xl font-bold"
+                >
+                  ❓
+                </div>
+
+                <!-- Contenu -->
+                <div class="flex-1">
+                  <div class="flex items-center justify-between">
+                    <h4 class="font-semibold text-gray-900">
+                      Un indice à débloquer...
+                    </h4>
+                  </div>
+
+                  <p class="mt-1 text-sm text-gray-600">
+                    Peut-être pourriez vous le trouver ?
                   </p>
                 </div>
               </div>
