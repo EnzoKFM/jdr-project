@@ -48,6 +48,12 @@
 
     const handleSubmit = () => {
         emit("save", { ...formData });
+        
+        formData.name = "";
+        formData.description = "";
+        formData.mjComment = "";
+        formData.activationMdp = "";
+        formData.resolutionMdp = "";
     };
 </script>
 
