@@ -133,8 +133,6 @@ export const useCampaignStore = defineStore("campaign", {
           }
           // Mettre à jour l'ID de la campagne active
           this.activeCampaignId = campaignId;
-        } else {
-          this.activeCampaignId = null;
         }
 
         // Mettre à jour la campagne
