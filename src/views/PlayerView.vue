@@ -233,7 +233,6 @@ const handleAvailableItemsForPlayer = computed(() => {
   if (selectedPlayer) {
     campaign.value.items.forEach((item) => {
       if (item.playerId === selectedPlayer?.value?.id) {
-        console.log(selectedPlayer.value.inventory)
         if (selectedPlayer.value.inventory.includes(item.id)) {
           tab.push(item);
         }
