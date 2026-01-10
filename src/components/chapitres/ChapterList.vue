@@ -131,8 +131,6 @@
   // Fermer le modal de modification d'état
   const closeStateModal = () => {
     showStateModal.value = false;
-    showPasswordActivateModal.value = false;
-    showPasswordResoluteModal.value = false;
     editingChapter.value = null;
   };
 

@@ -112,11 +112,12 @@
           <!-- Mot de passe d'activation -->
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">
-              🔐 Mot de passe d'activation
+              🔐 Mot de passe d'activation *
             </label>
             <input
               v-model="formData.activationMdp"
               rows="3"
+              required
               class="w-full px-4 py-3 border-2 border-yellow-300 bg-yellow-50 rounded-lg focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all resize-none"
               placeholder="Permet d'activer le chapitre du côté joueur"
             />
@@ -128,11 +129,12 @@
           <!-- Mot de passe de résolution -->
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">
-              🔐 Mot de passe de résolution
+              🔐 Mot de passe de résolution *
             </label>
             <input
               v-model="formData.resolutionMdp"
               rows="3"
+              required
               class="w-full px-4 py-3 border-2 border-yellow-300 bg-yellow-50 rounded-lg focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all resize-none"
               placeholder="Permet de terminer le chapitre côté joueur"
             />

@@ -15,13 +15,12 @@ const props = defineProps({
 const emit = defineEmits(["close", "save"]);
 
 const formData = reactive({
-  name: "",
-  description: "",
-  mjComment: "",
+  playerId: ""
 });
 
 const handleSubmit = () => {
   emit("save", formData.playerId);
+  formData.playerId = ""
 };
 </script>
 
@@ -46,18 +45,17 @@ const handleSubmit = () => {
               💬 Joueur
             </label>
             <select
+              value=""
               v-model="formData.playerId"
               class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all resize-none"
             >
+              <option disabled value="">Choisissez un joueur</option>
               <option
                 v-for="player in playerStore.listPlayers()"
                 :value="player.id"
               >
                 {{ player.name }}
               </option>
-              <!-- <option value="player_001">MICHEL</option>
-               <option value="player_002">PAUL</option>
-               <option value="player_003">JACK</option> -->
             </select>
           </div>
 
@@ -73,6 +71,10 @@ const handleSubmit = () => {
             <button
               type="submit"
               class="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-cyan-600 transition-all"
+              :disabled="formData.playerId === ''"
+              :class="{
+                'opacity-50 cursor-not-allowed': formData.playerId === ''
+              }"
             >
               Attribuer l'objet
             </button>

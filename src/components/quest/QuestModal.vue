@@ -116,11 +116,12 @@ const handleSubmit = () => {
           <!-- Mot de passe activation -->
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">
-              🔐 Mot de passe d’activation
+              🔐 Mot de passe d’activation *
             </label>
             <input
               v-model="form.motDePasseActivation"
               type="password"
+              required
               class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
               placeholder="Mot de passe d’activation"
             />
